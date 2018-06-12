@@ -10,7 +10,9 @@
 
 \usepackage{float}
 \usepackage{booktabs}
+\usepackage[acronym]{glossaries}
 
+\newacronym{acr::lod}{LoD}{Level of Detail}
 \begin{document}
 
 \pagestyle{headings}
@@ -35,7 +37,7 @@
 \end{abstract}
 
 \section{Introduction}
-	3D urban models have a wide application range (\textit{c.f.} Table~\ref{tab::3d_applications}). They can be used for ludic purposes (video games or tourism) as much as they can be vital in more serious domains (for instance: Run-off water or Military operation simulations). In consequence, automatic urban reconstruction is the focus of both scientific research and industrial activity. However, the problem is still unresolved~\cite{Musialski2012}, as current algorithms lack genericity and are greedy in time. As such, human intervention is needed either in interraction within the reconstruction pipeline or as a post-processing clean-up step. The later not being as efficient as one thinks~\cite{Musialski2012}, a method should be devised for urban recontruction evaluation.
+	3D urban models have a wide application range (\textit{c.f.} Table~\ref{tab::3d_applications}). They can be used for ludic purposes (video games or tourism) as much as they can be vital in more serious domains (for instance: Run-off water or Military operation simulations). In consequence, automatic urban reconstruction is the focus of both scientific research and industrial activity. However, the problem is still unresolved~\cite{Musialski2012}, as current algorithms lack genericity and are greedy in time. As such, human intervention is needed either in interraction within the reconstruction pipeline or as a post-processing clean-up step. The later not being as efficient as one thinks~\cite{Musialski2012}, a method should be devised for automatic urban recontruction evaluation.
 	\begin{table}[H]
 		\begin{center}
 			\begin{tabular}{l l l}
@@ -48,9 +50,10 @@
 				Communication networks & Military operation & Video games \\
 				\bottomrule
 			\end{tabular}
-			\caption{\label{tab::3d_applications} 3D urban models applications~\cite{Biljecki2015}, \cite{Scholze2002}.}
+			\caption{\label{tab::3d_applications} 3D urban models applications summary~\cite{Biljecki2015},~\cite{Scholze2002},~\cite{Wate2015}.}
 		\end{center}
 	\end{table}
+	In this work, we are interested in semantic evaluation for polyhedral building models resulting from urban recontruction methods. Polyhedral models are more compact compared to triangle meshes extracted from Mutliview Images or Point Clouds. In consequence, these models hold more semantic information as each facet corresponds to a fa\c{c}ade, a roof or any well defined morphological building face. However, in terms of fidelity to input data, they are less efficient. Reconstruction algorithms try to find a good compromise between compacity and semantics in one hand, and fidelity on the other. Depending on the input data spatial resolution, the urban scene in question and the aimed application, this compromise reconstitutes models up to a certain \acrfull{acr::lod}~\cite{kolbe2005citygml}. A \acrshort{acr::lod} $1$ model is a simple building extrusion. A \acrshort{acr::lod} $2$ modelisation considers geometric simplification of buildings, ignoring superstructures, such as dormer windows and chimneys. These are taken into account in the next \acrshort{acr::lod} $3$.
 \section{Related Work}
 \section{Problem Formulation}
 \subsection{Taxonomy}
