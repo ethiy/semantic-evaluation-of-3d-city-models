@@ -7,10 +7,12 @@
 \usepackage{ruler}
 \usepackage{color}
 \usepackage[width=122mm,left=12mm,paperwidth=146mm,height=193mm,top=12mm,paperheight=217mm]{geometry}
+
+\usepackage{float}
+\usepackage{booktabs}
+
 \begin{document}
-% \renewcommand\thelinenumber{\color[rgb]{0.2,0.5,0.8}\normalfont\sffamily\scriptsize\arabic{linenumber}\color[rgb]{0,0,0}}
-% \renewcommand\makeLineNumber {\hss\thelinenumber\ \hspace{6mm} \rlap{\hskip\textwidth\ \hspace{6.5mm}\thelinenumber}}
-% \linenumbers
+
 \pagestyle{headings}
 \mainmatter
 \def\ECCV18SubNumber{***}  % Insert your submission number here
@@ -24,16 +26,31 @@
 \author{Anonymous ECCV submission}
 \institute{Paper ID \ECCV18SubNumber}
 
-
 \maketitle
 
 \begin{abstract}
-
-\dots
-\keywords{3D urban modelling, Quality assessement.}
+	
+	\dots
+	\keywords{3D urban modelling, Quality assessement.}
 \end{abstract}
 
 \section{Introduction}
+	3D urban models have a wide range of applications (\textit{c.f.} Table~\ref{tab::3d_applications}).
+	\begin{table}[H]
+		\begin{center}
+			\begin{tabular}{l l l}
+				\toprule
+				Planification & Simulation & Visualisation \\
+				\midrule
+				Urban planification & Microclimat & Architecture \\
+				Emergency intervention & Wave propagation & Cadastre \\
+				Interior decoration & Run-off water & Tourism \\
+				Communication networks & Armed intervention & Video games \\
+				\bottomrule
+			\end{tabular}
+			\caption{\label{tab::3d_applications} 3D urban models applications~\cite{Biljecki2015, Scholze2002}.}
+		\end{center}
+	\end{table}
 \section{Related Work}
 \section{Methodology}
 \subsection{Taxonomy}
