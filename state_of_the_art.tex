@@ -1,0 +1,76 @@
+\documentclass[tikz, border=7pt]{standalone}
+
+    \usepackage[T1]{fontenc}
+    \usepackage[english]{babel}
+    
+    \usepackage{xcolor}
+    
+    \usepackage{tikz}
+    
+    \usepackage{bibentry}
+    
+    
+    \begin{document}
+        
+    \usetikzlibrary{positioning}
+    \usetikzlibrary{patterns}
+    \usetikzlibrary{shapes.misc}
+    
+    \tikzset{
+        data/.style={
+            draw,
+            minimum height = 1cm,
+            minimum width  = 8cm,
+            fill           = yellow!20
+        }
+    }
+    \tikzset{
+        output/.style={
+            draw,
+            minimum height = 4 cm,
+            minimum width  = 1 cm,
+            fill           = yellow!30
+        }
+    }
+    \tikzset{
+        intersection/.style={
+            draw,
+            minimum height = 4 cm,
+            minimum width  = 8 cm,
+            fill           = red!30
+        }
+    }
+    \tikzset{
+        cross/.style={
+              cross out,
+              draw=black,
+              minimum size=2*(#1-\pgflinewidth),
+              inner sep=0pt,
+              outer sep=0pt
+          },
+        cross/.default={5pt}
+    }
+    
+        \begin{tikzpicture}
+            \node[data]  (manual) {\textbf{Manual data}};
+            \path (manual.east) + (4, 0) node[data] (sensor) {\textbf{Sensor data}};
+            \path (manual.north west) + (-.5, 2) node[output] (semantic_errors) {\rotatebox{90}{\textbf{Semantic errors}}};
+            \path (semantic_errors.north) + (0, 2) node[output] (geom_ind) {\rotatebox{90}{\textbf{Geometric indices}}};
+    
+        \path (manual.north) + (0, 2) node[intersection, color=gray!30] (manual_semantic) {};
+            \path (manual_semantic.north) + (0, 2) node[intersection, left color=red!70, right color=red!20] (manual_indx) {};
+            \path (sensor.north) + (0, 2) node[intersection, left color=gray!30,right color=green!=50] (sensor_semantic) {};
+            \path (sensor_semantic.north) + (0, 2) node[intersection, left color=red!20,right color=purple!=50] (sensor_indx) {};
+    
+            \path (manual_indx) + (0, -.5) node[cross, label=below:\cite{Zeng2014}]{};
+            \path (manual_indx) + (-1, 1) node[cross, label=above:\cite{Voegtle2003}]{};
+            \path (manual_indx) + (1.5, .5) node[cross, label=below:\cite{Kaartinen2005}]{};
+            \path (sensor_indx) node[cross, label=below:\cite{Akca2010}]{};
+            \path (sensor_semantic) + (0, 1.75) node[cross, label=below:\cite{OudeElberink2010}]{};
+            \path (sensor_semantic) + (-.75, .25) node[cross, label=below:\cite{boudet2006supervised}]{};
+            \path (sensor_semantic) + (1.5, -.75) node[cross, label=below:\cite{Michelin2013}]{};
+        \end{tikzpicture}
+        \bibliographystyle{apalike}
+        \nobibliography{references}
+    \end{document}
+    
