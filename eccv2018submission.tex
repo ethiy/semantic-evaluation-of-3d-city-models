@@ -45,7 +45,7 @@
 \end{abstract}
 
 \section{Introduction}
-	3D urban models have a wide application range (\textit{c.f.} Table~\ref{tab::3d_applications}). They can be used for ludic purposes (video games or tourism) as much as they can be vital in more serious domains (for instance: Run-off water or Military operation simulations). In consequence, automatic urban reconstruction is the focus of both scientific research and industrial activity. However, the problem is still unresolved~\cite{Musialski2012},~\cite{rottensteiner2014results}, as current algorithms lack genericity and are greedy in time. As such, human intervention is needed either in interraction within the reconstruction pipeline or as a post-processing clean-up step. The later not being as efficient as one thinks~\cite{Musialski2012}, a method should be devised for automatic urban recontruction evaluation.
+	3D urban models have a wide application range (\textit{c.f.} Table~\ref{tab::3d_applications}). They can be used for ludic purposes (video games or tourism) \textcolor{yellow}{As-tu des references ?} as much as they can be vital in more serious domains (for instance: run-off water \textcolor{yellow}{meteorological, electromagnetic waves : As-tu des references} or military operation simulations). In consequence, automatic urban reconstruction is the focus of both scientific research and industrial activity. However, the problem is still unresolved~\cite{Musialski2012},~\cite{rottensteiner2014results}, as current algorithms lack genericity and are greedy in time \textcolor{yellow}{Pas forcement grave que cela soit long si ce sont des traitements automatiques}. As such, human intervention is needed either in interaction within the reconstruction pipeline or as a post-processing clean-up step. The later not being as efficient as one thinks~\cite{Musialski2012}, a method should be devised for automatic urban recontruction evaluation.
 	\begin{table}[H]
 		\begin{center}
 			\begin{tabular}{l l l}
@@ -61,21 +61,21 @@
 			\caption{\label{tab::3d_applications} 3D urban models applications summary~\cite{Biljecki2015},~\cite{Scholze2002},~\cite{Wate2015}.}
 		\end{center}
 	\end{table}
-	In this work, we are interested in semantic evaluation for polyhedral building models resulting from urban recontruction methods. Polyhedral models are more compact compared to triangle meshes extracted from Mutliview Images or Point Clouds. In consequence, these models hold more semantic information as each facet corresponds to a fa\c{c}ade, a roof or any well defined morphological building face. However, in terms of fidelity to input data, they are less efficient. Reconstruction algorithms try to find a good compromise between compacity and semantics in one hand, and fidelity on the other. Depending on the input data spatial resolution, the urban scene in question and the aimed application, this compromise reconstitutes models up to a certain \acrfull{acr::lod}~\cite{kolbe2005citygml}. A \acrshort{acr::lod} $1$ model is a simple building extrusion. A \acrshort{acr::lod} $2$ modelisation considers geometric simplification of buildings, ignoring superstructures, such as dormer windows and chimneys. These are taken into account in the next \acrshort{acr::lod} $3$.\\
+	This work focused on semantic evaluation of polyhedral building models resulting from urban reconstruction methods. Polyhedral models are more compact compared to triangle meshes extracted from Mutliview Images or Point Clouds. In consequence, these models hold more semantic information as each facet corresponds to a fa\c{c}ade, a roof or any well defined morphological building face. However, in terms of fidelity to input data, they are less efficient. Thus, reconstruction algorithms try to find a good compromise between compacity and semantics on one hand, and fidelity on the other. Depending on the input data spatial resolution, the urban scene in question and the aimed application, this compromise reconstitutes models up to a certain \acrfull{acr::lod}~\cite{kolbe2005citygml}. A \acrshort{acr::lod} $1$ model is a simple building extrusion. A \acrshort{acr::lod} $2$ model considers geometric simplification of buildings, ignoring superstructures, such as dormer windows and chimneys. These are taken into account in the next \acrshort{acr::lod} $3$. \textcolor{yellow}{Petit schema ? Mentionner le fait que les LoD ne sont pas une affaire totalement close : cf la presentation keynote}\\
 	
 	Semantic evaluation has not been well studied until now. There is only one benchmark~\cite{rottensteiner2014results} that is not widely used for comparison~\cite{Lafarge2012},~\cite{nguatem2017modeling},~\cite{li2016boxfitting}. Usually reconstruction evaluation is based on visual inspection~\cite{Musialski2012},~\cite{MacayMoreia2013} or geometric indices comparison~\cite{Kaartinen2005} without a semantic dimension. In this work, by semantic evaluation, we mean the detection and categorization of modeling errors that can affect buildings. This kind of methods can be used to:
 	\begin{itemize}
-		\item \textbf{Building Model Correction}: automatically or interactivally correct building models based on the detected errors;
-		\item \textbf{Change Detection}: where change can be considered as a modeling error or indirectly through other errors;
-		\item \textbf{Reconctruction Method Selection}: based on analysing errors of interest for the designated algorithms;
-		\item \textbf{Crowdsourcing Evaluation}: in order to categorize user behaviors during crowdsourced modeling.
+		\item \textbf{Building model correction}: automatically or interactivally correct building models based on the detected errors;
+		\item \textbf{Change detection}: where change can be considered as a modeling error or indirectly through other errors.
+		\item \textbf{Reconstruction method selection}: based on analysing errors of interest for the designated algorithms;
+		\item \textbf{Crowdsourcing evaluation}: in order to categorize user behaviors during crowdsourced modeling.
 	\end{itemize}
 	
-	We list here the main contributions of our work:
+	This work especially proposed :
 	\begin{itemize}
-		\item A new \textbf{Error Taxonomy} has been divised that is independent from any reconstruction approach or input data;
-		\item The evaluation problem is formulated as a \textbf{Supervized Classification} one that predicts previously defined errors that affects a building model.
-		\item A simple \textbf{Baseline of Features} is extracted from the model to be fed to a classifier for the prediction.
+		\item a new \textbf{error taxonomy}: independent from any reconstruction approach or input data;
+		\item the evaluation problem is formulated as a \textbf{supervised classification} one that predicts previously defined errors that can affect the building model.
+		\item a simple \textbf{baseline for features} is extracted from the model to feed a classifier for error prediction.
 	\end{itemize}
 \section{Related Work}
 
