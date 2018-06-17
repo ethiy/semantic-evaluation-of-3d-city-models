@@ -69,7 +69,7 @@
 		\end{center}
 	\end{figure}
 	
-	Semantic evaluation has not been well studied until now. There is only one benchmark~\cite{rottensteiner2014results} that is not widely used for comparison~\cite{Lafarge2012},~\cite{nguatem2017modeling},~\cite{li2016boxfitting}. Usually reconstruction evaluation is based on visual inspection~\cite{Musialski2012},~\cite{MacayMoreia2013} or geometric indices comparison~\cite{Kaartinen2005} without a semantic dimension. In this work, by semantic evaluation, we mean the detection and categorization of modeling errors that can affect buildings. This kind of quality assessement methods can be used for:
+	Semantic evaluation has not been well studied until now. There is only one benchmark~\cite{rottensteiner2014results} that is not widely used for comparison~\cite{Lafarge2012},~\cite{nguatem2017modeling},~\cite{li2016boxfitting}. Usually reconstruction evaluation is based on visual inspection~\cite{Durupt2006},~\cite{MacayMoreia2013} or geometric indices comparison~\cite{Kaartinen2005} without a semantic dimension. In this work, by semantic evaluation, we mean the detection and categorization of modeling errors that can affect buildings. This kind of quality assessement methods can be used for:
 	\begin{itemize}
 		\item \textbf{Building model correction}: automatically or interactivally correct building models based on the detected errors;
 		\item \textbf{Change detection}: where change can be considered as a modeling error or indirectly through other errors.
@@ -108,8 +108,13 @@ The quality assement methods can produce two kinds of ouputs:
 \end{figure}
 The quality assessement methods that we have dicussed earlier are summarized in Figure~\ref{fig::state_of_art}. In our work, we want to devise a quality evaluation paradigm with no reference data, or, at least, the most available ones, that produces semantic localized errors independent from reconstruction methods and assessed models.
 \section{Problem Formulation}
-To evalute reconstructed input models, we rely on an established error taxonomy. Depending on the evalution objectives, we deduce error labels that will be used to predict model defects. We annotate models in order to train a supervized classifier model that will be used for prediction on other reconstituted models. Building models are represented by intrinsic geometric features. We can feed the classifier additional altimetric features, based on the comparison of the models altimetry and the \acrshort{acr::dsm}, and radiometric features extracted from the corresponding orthoimage.
-\subsection{Taxonomy}
+To evalute reconstructed input models, we established an error taxonomy. Depending on the evalution objectives, we deduce error labels that will be used to predict model defects. We annotate models in order to train a supervized classifier model that will be used for prediction on other reconstituted models. Building models are represented by intrinsic geometric features. We can feed the classifier additional altimetric features, based on the comparison of the models altimetry and the \acrshort{acr::dsm}, and radiometric features extracted from the corresponding orthoimage.\\
+
+The error taxonomy is parametrizable and agnostic towards reconstructed inputs. This flexibility and independence means that, at runtime, the evalutation process does not involve heavy computing. Furthermore, it does not require manually obtained reference data other than the annotated data on which the classifier is pretrained. Our evalutation pipeline is modular, as it can take advantage, in addition to the model itself, of depth informations --- stereoscopic or \acrfull{acr::lidar} based \acrshort{acr::dsm} or depth map  --- or radiometric ones --- orthoimages, oriented aerial images or street view images--- if available.
+\subsection{Error Taxonomy}
+In order to build a generic and flexible taxonomy, we rely on two criterea for error compilation: the \acrshort{acr::lod} and the error semantic level --- which we shall name henceforth \textit{finesse}. Each \textit{finesse} is associated to a natural integer starting from $0$. Errors with maximal \textit{finesse} are called \textit{atomic} errors. These last defects could be correlated, heuristically, to unit actions from an operator, or an algorithm, to correct the input model.\\
+
+As pointed out in~\cite{ledoux2018val3dity}, not all models are geometrically valid In other cases, buildings are occluded by vegetation. Aside from formatting issues or geometric inconsitencies, there are other reasons that renders building models unqualifiable. In general, some pathological cases, outside our evaluation framework, are impair input models. In consequence, we distiguish \textit{Qualifiable} models from \textit{Unqualifiable} buildings. This first qualification level corresponds to the $\textit{finesse} = 0$. 
 \subsection{Baseline Features}
 \subsection{Classifiers}
 \section{Experiments}
