@@ -24,10 +24,10 @@
 \begin{document}
 
 \pagestyle{headings}
-\mainmatter
+\mainmatter{}
 \def\ECCV18SubNumber{***}  % Insert your submission number here
 
-\title{3D Building Modeling Semantic Evaluation} 
+\title{3D Building Modeling Semantic Evaluation}
 
 \titlerunning{ECCV-18 submission ID \ECCV18SubNumber}
 
@@ -39,60 +39,60 @@
 \maketitle
 
 \begin{abstract}
-	We are tackling the problem of 3D model reconstruction quality evaluation. Currently, no scalable approach has been proposed to semantically assess automatic reconstruction methods output. One must rely on the presence of high precision models that are not easily affordable. In our approach, we try to predict building models quality based on its geometry and available remote sensing data.
-	\keywords{3D urban modeling, Quality assessment.}
+    We are tackling the problem of 3D model reconstruction quality evaluation. Currently, no scalable approach has been proposed to semantically assess automatic reconstruction methods output. One must rely on the presence of high precision models that are not easily affordable. In our approach, we try to predict building models quality based on its geometry and available remote sensing data.
+    \keywords{3D urban modeling, Quality assessment.}
 \end{abstract}
 
 \section{Introduction}
-	3D urban models have a wide application range (\textit{c.f.} Table~\ref{tab::3d_applications}). They can be used for ludic purposes (video games or tourism) \textcolor{yellow}{As-tu des references ?} as much as they can be vital in more serious domains (for instance: run-off water \textcolor{yellow}{meteorological, electromagnetic waves : As-tu des references} or military operation simulations). In consequence, automatic urban reconstruction is the focus of both scientific research and industrial activity. However, the problem is still unresolved~\cite{Musialski2012},~\cite{rottensteiner2014results}, as current algorithms lack genericity and are greedy in time \textcolor{yellow}{Pas forcement grave que cela soit long si ce sont des traitements automatiques}. As such, human intervention is needed either in interaction within the reconstruction pipeline or as a post-processing clean-up step. The later not being as efficient as one thinks~\cite{Musialski2012}, a method should be devised for automatic urban recontruction evaluation.
-	\begin{table}[H]
-		\begin{center}
-			\begin{tabular}{l l l}
-				\toprule
-				Planification & Simulation & Visualisation \\
-				\midrule
-				Urban planification & Microclimat & Architecture \\
-				Emergency intervention & Wave propagation & Cadastre \\
-				Interior decoration & Run-off water & Tourism \\
-				Communication networks & Military operation & Video games \\
-				\bottomrule
-			\end{tabular}
-			\caption{\label{tab::3d_applications} 3D urban models applications summary~\cite{Biljecki2015},~\cite{Scholze2002},~\cite{Wate2015}.}
-		\end{center}
-	\end{table}
-	This work focused on semantic evaluation of polyhedral building models resulting from urban reconstruction methods. Polyhedral models are more compact compared to triangle meshes extracted from Mutliview Images or Point Clouds. In consequence, these models hold more semantic information as each facet corresponds to a fa\c{c}ade, a roof or any well defined morphological building face. However, in terms of fidelity to input data, they are less efficient. Thus, reconstruction algorithms try to find a good compromise between compacity and semantics on one hand, and fidelity on the other. Depending on the input data spatial resolution, the urban scene in question and the aimed application, this compromise reconstitutes models up to a certain \acrfull{acr::lod}~\cite{kolbe2005citygml}. A \acrshort{acr::lod} $1$ model is a simple building extrusion. A \acrshort{acr::lod} $2$ model considers geometric simplification of buildings, ignoring superstructures, such as dormer windows and chimneys. These are taken into account in the next \acrshort{acr::lod} $3$. We will stick, from hereon, to these \acrshort{acr::lod} definitions as in~\cite{verdie2015lod}, since \glspl{acr::lod} are still subject to discussion~\cite{2016_ceus_improved_lod}.
-	
-	Semantic evaluation has not been well studied until now. There is only one benchmark~\cite{rottensteiner2014results} that is not widely used for comparison~\cite{Lafarge2012},~\cite{nguatem2017modeling},~\cite{li2016boxfitting}. Usually reconstruction evaluation is based on visual inspection~\cite{Durupt2006},~\cite{MacayMoreia2013} or geometric indices comparison~\cite{Kaartinen2005} without a semantic dimension. In this work, by semantic evaluation, we mean the detection and categorization of modeling errors that can affect buildings. This kind of quality assessment methods can be used for:
-	\begin{itemize}
-		\item \textbf{Building model correction}: automatically or interactively correct building models based on the detected errors;
-		\item \textbf{Change detection}: where change can be considered as a modeling error or indirectly through other errors.
-		\item \textbf{Reconstruction method selection}: based on analysis of errors of interest for the designated algorithms;
-		\item \textbf{Crowd-sourcing evaluation}: in order to categorize user behaviors during crowd sourced modeling.
-	\end{itemize}
-	
-	This work essentially proposes :
-	\begin{itemize}
-		\item a new \textbf{error taxonomy}, independent from any reconstruction approach or urban scene;
-		\item the formulation of the evaluation problem as a \textbf{supervised classification} one that predicts previously defined errors that can affect the building model.
-		\item a simple \textbf{baseline for features} is extracted from the model to feed a classifier for error prediction.
-	\end{itemize}
+    3D urban models have a wide application range (\textit{c.f.} Table~\ref{tab::3d_applications}). They can be used for ludic purposes (video games or tourism) as much as they can be vital in more serious domains (for instance: run-off water, microclimate or military operation simulations)~\cite{Biljecki2015}. In consequence, automatic urban reconstruction is the focus of both scientific research and industrial activity. However, the problem is still unresolved~\cite{Musialski2012},~\cite{rottensteiner2014results}, as current algorithms lack genericity and are greedy in time \textcolor{yellow}{Pas forcement grave que cela soit long si ce sont des traitements automatiques}. As such, human intervention is needed either in interaction within the reconstruction pipeline or as a post-processing clean-up step. The later not being as efficient as one thinks~\cite{Musialski2012}, the automatization urban reconstruction evaluation can be helpful, especially in a production environement.
+    \begin{table}[H]
+        \begin{center}
+            \begin{tabular}{l l l}
+                \toprule
+                Planification & Simulation & Visualisation \\
+                \midrule
+                Urban planification & Microclimat & Architecture \\
+                Emergency intervention & Wave propagation & Cadastre \\
+                Interior decoration & Run-off water & Tourism \\
+                Communication networks & Military operation & Video games \\
+                \bottomrule
+            \end{tabular}
+            \caption{\label{tab::3d_applications} 3D urban models applications summary~\cite{Biljecki2015},~\cite{Scholze2002},~\cite{Wate2015}.}
+        \end{center}
+    \end{table}
+    This work is focused on semantic evaluation of polyhedral building models resulting from urban reconstruction methods. Polyhedral models are more compact compared to triangle meshes extracted from Mutliview Images or Point Clouds. In consequence, these models hold more semantic information as each facet corresponds to a fa\c{c}ade, a roof or any well defined morphological building face. However, in terms of fidelity to input data, they are less efficient. Thus, reconstruction algorithms try to find a good compromise between compacity and semantics on one hand, and fidelity on the other. Depending on the input data spatial resolution, the urban scene in question and the aimed application, the reconstruction result has a certain \acrfull{acr::lod}~\cite{kolbe2005citygml}. A \acrshort{acr::lod} $1$ model is a simple building extrusion. A \acrshort{acr::lod} $2$ model considers geometric simplification of buildings, ignoring superstructures, such as dormer windows and chimneys. These are taken into account in the next \acrshort{acr::lod} $3$. We will stick, from hereon, to these \acrshort{acr::lod} definitions as in~\cite{verdie2015lod}, since \glspl{acr::lod} are still subject to discussion~\cite{2016_ceus_improved_lod}.
+
+    3D urban reconstruction semantic evaluation has not thouroughtly studied until now. There is only one benchmark~\cite{rottensteiner2014results} that is not widely used for comparison~\cite{Lafarge2012},~\cite{nguatem2017modeling},~\cite{li2016boxfitting}. Usually reconstruction evaluation is based on visual inspection~\cite{Durupt2006},~\cite{MacayMoreia2013} or geometric indices comparison~\cite{Kaartinen2005} without any localized semantic dimension. In this work, by semantic evaluation, we mean the detection and categorization of modeling errors that can affect individual buildings. We are not interested in this article in format issues or geometric consistencies as studied in~\cite{ledoux2018val3dity}. Semantic quality assessment methods can be used for:
+    \begin{itemize}
+        \item \textbf{Building models correction}: automatically or interactively correct building models based on the detected errors;
+        \item \textbf{Change detection}: where change can be considered as a modeling error or implicitly detected from other errors.
+        \item \textbf{Reconstruction method selection}: based on the comparison of the designated algorithms performances on errors of interest;
+        \item \textbf{Crowd-sourcing evaluation}: by categorizing user behaviors during crowd sourced modeling and vandalism detection.
+    \end{itemize}
+
+    This work essentially proposes:
+    \begin{itemize}
+        \item a new \textbf{error taxonomy}, independent from any reconstruction approach or urban scene;
+        \item the formulation of the evaluation problem as a \textbf{supervised classification} one that predicts previously defined errors that can affect the building model.
+        \item a simple \textbf{baseline for features} is extracted from the model to feed a classifier for error prediction.
+    \end{itemize}
 \section{Related Work}
 
-Quality assessment methods can be classified based on two criteria: the type of their output and the reference data they use.
+Quality assessment methods can be classified based on two criteria: the type of their output or the reference data they use.
 \subsubsection{Reference Data Types.}
 All quality assessment method need a reference data to compare with. In deed, in literature, the 3D reconstructed building models are compared to:
 \begin{itemize}
-	\item \textbf{Manually obtained ground truth data} with a higher spatial accuracy. These models can be obtained either through geodetic measurements~\cite{Kaartinen2005},~\cite{Voegtle2003} ($\sigma(\text{error}) \approx \SI{0.05}{\meter}$), or using stereo-plotting~\cite{Kaartinen2005},~\cite{Zeng2014}. The main disadvantage of these data is the fact that they are not easily come by.
-	\item \textbf{Raw sensor data}. For instance, models can be compared to \acrfull{acr::lidar} point clouds~\cite{Akca2010},~\cite{Lafarge2012},~\cite{li2016boxfitting} or oriented aerial images~\cite{boudet2006supervised},~\cite{Michelin2013}. Although these are easier to get than the previous ones, they are low on structural and semantic informations to use for the comparison.
+    \item \textbf{Manually obtained ground truth data} with a higher spatial accuracy. These models can be obtained either through geodetic measurements~\cite{Kaartinen2005},~\cite{Voegtle2003} ($\sigma(\text{error}) \approx \SI{0.05}{\meter}$), or using stereo-plotting~\cite{Kaartinen2005},~\cite{Zeng2014}. However this kind of data are not easily produced.
+    \item \textbf{Raw sensor data}. For instance, models can be compared to \acrfull{acr::lidar} point clouds~\cite{Akca2010},~\cite{Lafarge2012},~\cite{li2016boxfitting} or oriented aerial images~\cite{boudet2006supervised},~\cite{Michelin2013}. Although these are easier to get than the previous ones, they are low on structural and semantic informations for the sake of evaluation.
 \end{itemize}
 \subsubsection{Evaluation Output Types.}
 The quality assessment methods can produce two kinds of outputs:
 \begin{itemize}
-	\item \textbf{Geometric indices}: they can summarize the quality of the whole assessed model. These indices are computed at different scales: points of interest (such as corners or edge points) average precision~\cite{Kaartinen2005},~\cite{Voegtle2003}, surface discrepancy to reference data~\cite{Kaartinen2005},~\cite{Henricsson1997},~\cite{Zeng2014},~\cite{Lafarge2012},~\cite{li2016boxfitting} or volume discrepancy to reference data~\cite{Zeng2014}. These outputs have the drawback of being too general for the special case of urban polyhedral models. Far from surface reconstruction evaluation~\cite{berger2013benchmark}, we need to localize specific types of errors that can be easily corrected once identified~\cite{OudeElberink2010}.
-	\item \textbf{Semantic errors}: they identify topological and geometric errors that affects polyhedral models. One example of such errors is the traffic light paradigm (correct acceptable, generalized and rejected)~\cite{boudet2006supervised}. However, these error depend on a vaguely defined ``generalized'' level. In addition, this taxonomy does not help to localize the model shortcomings. One solution is to adopt the used reconstruction algorithm perspective. For instance, defects are arranged, in~\cite{Michelin2013}, into footprint errors (erroneous outline, inexistent building, missing inner court and imprecise footprint), intrinsic reconstruction errors(over segmentation, under segmentation, inexact roof and Z translation) and vegetation occlusion errors. In the case of semantic errors, the evaluation is the result of a supervised classification where predicted classes are the defined taxonomy errors. Features are extracted from high spatial resolution (\SIrange{20}{25}{\cm}) oriented aerial images and \glspl{acr::dsm} by 3D segments and texture correlation scores comparison~\cite{boudet2006supervised},~\cite{Michelin2013}. In spite of the contribution with semantic information for quality evaluation, taxonomies can over-fit to a special urban scene or a reconstruction algorithm.
+    \item \textbf{Geometric indices}: they can summarize the quality of the whole assessed model. These indices are computed at different scales: points of interest (such as corners or edge points) average precision~\cite{Kaartinen2005},~\cite{Voegtle2003}, surface discrepancy to reference data~\cite{Kaartinen2005},~\cite{Henricsson1997},~\cite{Zeng2014},~\cite{Lafarge2012},~\cite{li2016boxfitting} or volume discrepancy to reference data~\cite{Zeng2014}. These outputs have the drawback of being too general for the special case of urban polyhedral models. Far from surface reconstruction evaluation~\cite{berger2013benchmark}, we need to pinpoint specific types of errors that can be easily corrected once identified~\cite{OudeElberink2010}.
+    \item \textbf{Semantic errors}: they identify topological and geometric errors that affect polyhedral models. One example of such errors is the traffic light paradigm (correct acceptable, generalized and rejected)~\cite{boudet2006supervised}. However, these error depend on a vague definition of the ``generalized'' level. In addition, this taxonomy does not help to localize the model shortcomings. One solution is to adopt the used reconstruction algorithm perspective. For instance, defects are arranged, in~\cite{Michelin2013}, into footprint errors (erroneous outline, inexistent building, missing inner court and imprecise footprint), intrinsic reconstruction errors (over segmentation, under segmentation, inexact roof and Z translation) and vegetation occlusion errors. In the later methods, the evaluation is the result of a supervised classification where predicted classes are defects listed in the taxonomy. Features are extracted from high spatial resolution (\SIrange{20}{25}{\cm}) oriented aerial images and \glspl{acr::dsm} by 3D segments and texture correlation scores comparison~\cite{boudet2006supervised},~\cite{Michelin2013}. In spite of the contribution with semantic information for quality evaluation, taxonomies can over-fit to a special urban scene or a reconstruction algorithm.
 \end{itemize}
 
-The quality assessment methods that we have discussed earlier are summarized in Figure~\ref{fig::state_of_art}. In our work, we want to devise a quality evaluation paradigm with no reference data, or, at least, the most available ones, that produces semantic localized errors independent from reconstruction methods and assessed models.
+In our work, we want to devise a quality evaluation paradigm using no reference data, or, at least, the most available ones, that lists semantic localized errors independent from reconstruction methods and assessed models.
 \section{Problem Formulation}
 To evaluate reconstructed input models, we established an error taxonomy. Depending on the evaluation objectives, we deduce error labels that will be used to predict model defects. We annotate models in order to train a supervised classifier model that will be used for prediction on other reconstituted models. Building models are represented by intrinsic geometric features. We can feed the classifier additional altimetric features, based on the comparison of the models altimetry and the \acrshort{acr::dsm}, and radiometric features extracted from the corresponding orthoimage.\\
 
@@ -100,7 +100,7 @@ The error taxonomy is parameterizable and agnostic towards reconstructed inputs.
 \subsection{Error Taxonomy}
 In order to build a generic and flexible taxonomy, we rely on two criteria for error compilation: the \acrshort{acr::lod} and the error semantic level --- which we shall name henceforth \textit{finesse}. Each \textit{finesse} is associated to a natural integer starting from $0$. Errors with maximal \textit{finesse} are called \textit{atomic} errors. These last defects could be correlated, heuristically, to unit actions from an operator, or an algorithm, to correct the input model.\\
 
-As pointed out in~\cite{ledoux2018val3dity}, not all models are geometrically valid In other cases, buildings are occluded by vegetation. Aside from formatting issues or geometric inconsistencies, there are other reasons that renders building models unqualifiable. In general, some pathological cases, outside our evaluation framework, are impair input models. In consequence, we distinguish \textit{Qualifiable} models from \textit{Unqualifiable} buildings. This first qualification level corresponds to the $\textit{finesse} = 0$. 
+As pointed out in~\cite{ledoux2018val3dity}, not all models are geometrically valid In other cases, buildings are occluded by vegetation. Aside from formatting issues or geometric inconsistencies, there are other reasons that renders building models unqualifiable. In general, some pathological cases, outside our evaluation framework, are impair input models. In consequence, we distinguish \textit{Qualifiable} models from \textit{Unqualifiable} buildings. This first qualification level corresponds to the $\textit{finesse} = 0$.
 \subsection{Baseline Features}
 \subsection{Classifiers}
 \section{Experiments}
