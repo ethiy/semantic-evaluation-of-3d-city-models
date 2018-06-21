@@ -49,7 +49,7 @@
         \begin{center}
             \begin{tabular}{l l l}
                 \toprule
-                Planification & Simulation & Visualisation \\
+                Planification & Simulation & Visualization \\
                 \midrule
                 Urban planification & Microclimat & Architecture \\
                 Emergency intervention & Wave propagation & Cadastre \\
@@ -94,6 +94,11 @@ The quality assessment methods can produce two kinds of outputs:
 
 In our work, we want to devise a quality evaluation paradigm using no reference data, or, at least, the most available ones, that lists semantic localized errors independent from reconstruction methods and assessed models.
 \section{Problem Formulation}
+
+\begin{figure}
+	\includestandalone[mode=buildnew, width=\textwidth]{graphical_abstract}
+	\caption{\label{fig::pipeline} The whole evaluation pipeline illustration.}
+\end{figure}
 To evaluate reconstructed input models, we established an error taxonomy. Depending on the evaluation objectives, we deduce error labels that will be used to predict model defects. We annotate models in order to train a supervised classifier model that will be used for prediction on other reconstituted models. Building models are represented by intrinsic geometric features. We can feed the classifier additional altimetric features, based on the comparison of the models altimetry and the \acrshort{acr::dsm}, and radiometric features extracted from the corresponding orthoimage.\\
 
 The error taxonomy is parameterizable and agnostic towards reconstructed inputs. This flexibility and independence means that, at runtime, the evaluation process does not involve heavy computing. Furthermore, it does not require manually obtained reference data other than the annotated data on which the classifier is pretrained. Our evaluation pipeline is modular, as it can take advantage, in addition to the model itself, of depth informations --- stereoscopic or \acrfull{acr::lidar} based \acrshort{acr::dsm} or depth map  --- or radiometric ones --- orthoimages, oriented aerial images or street view images--- if available.
