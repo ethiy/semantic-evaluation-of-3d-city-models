@@ -23,13 +23,19 @@
 
 \begin{document}
     \begin{tikzpicture}
-    	\node (model) at (0,0) {\includestandalone[mode=buildnew, width=.5\textwidth]{building_model}};
-        \path (model.east) + (10,0) node[data] (geometric_features) {$v_{geom} = \begin{bmatrix}
+    	\node (model) at (0,0) {\includestandalone[mode=buildnew, width=4cm]{building_model}};
+        \path (model.east) + (20,0) node[data] (geometric_features) {$v_{geom} = \begin{bmatrix}
         v_1\\v_2\\ \vdots \\ v_g
         \end{bmatrix}$};
-        \path (model.south) + (6, -2.5) node (images) {\includegraphics[width=.25\textwidth]{images/simulated_dsm}};
+        \path (model.south east) + (15, -1.5) node (simulated_dsm) {\includegraphics[width=2cm]{images/simulated_dsm}};
         
-        \path (model.south) + (0, -10) node (images) {\includestandalone[mode=buildnew, width=.4\textwidth]{radiometric_input}};
+        \path (simulated_dsm.south) + (0, -2.5) node (dsm) {\includegraphics[width=2cm]{images/dsm}};
+        \path (model.south) + (9, -5) node (dsm) {\includegraphics[width=6cm]{images/dsm_elanc}};
+        \path (geometric_features.south) + (0, -5.5) node[data] (altimatric_features) {$v_{alti} = \begin{bmatrix}
+        v_1\\v_2\\ \vdots \\ v_a
+        \end{bmatrix}$};
+        
+        \path (simulated_dsm.south) + (0, -10) node (images) {\includestandalone[mode=buildnew, width=2cm]{radiometric_input}};
         \path (geometric_features.south) + (0, -11.5) node[data] (radiometric_features) {$v_{radio} = \begin{bmatrix}
         v_1\\v_2\\ \vdots \\ v_r
         \end{bmatrix}$};
