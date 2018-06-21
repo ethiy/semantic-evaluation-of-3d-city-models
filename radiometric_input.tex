@@ -4,7 +4,6 @@
 \usepackage[english]{babel}
 
 \usepackage{graphicx}
-\usepackage[skins]{tcolorbox}
 
 \usepackage{tikz}
 \usepackage{fourier}
@@ -12,13 +11,8 @@
 \usetikzlibrary{calc, 3d}
 
 \begin{document}
-    \begin{tikzpicture}[x  = {(.5cm,-.5cm)},
-                        y  = {(0.96638cm,-0.00018cm)},
-                        z  = {(0cm,1cm)},
-                        scale = 1,
-                        color = {lightgray}]
-        \begin{scope}[canvas is zy plane at x=0]
-            \path[fill=black] (0,0) rectangle (2,3);
-        \end{scope}
+    \begin{tikzpicture}
+    	\node (orthoimage) at (1,-1) {\includegraphics[]{images/orthoimage}};
+        \node at(0,0) {\includegraphics[]{images/orthoimage}};
     \end{tikzpicture}
 \end{document}
