@@ -3,7 +3,8 @@
 \usepackage[T1]{fontenc}
 \usepackage[english]{babel}
 
-\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage[skins]{tcolorbox}
 
 \usepackage{tikz}
 \usepackage{fourier}
@@ -11,13 +12,13 @@
 \usetikzlibrary{calc, 3d}
 
 \begin{document}
-    \begin{tikzpicture}[x  = {(-0.5cm,-0.5cm)},
-                        y  = {(0.9659cm,-0.25882cm)},
+    \begin{tikzpicture}[x  = {(.5cm,-.5cm)},
+                        y  = {(0.96638cm,-0.00018cm)},
                         z  = {(0cm,1cm)},
                         scale = 1,
                         color = {lightgray}]
         \begin{scope}[canvas is zy plane at x=0]
-          	\node (orthoimage) at (0,0) {};
+            \path[fill=black] (0,0) rectangle (2,3);
         \end{scope}
     \end{tikzpicture}
 \end{document}
