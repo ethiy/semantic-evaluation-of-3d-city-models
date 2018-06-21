@@ -1,0 +1,19 @@
+\documentclass[tikz, border=7pt]{standalone}
+
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+
+\usepackage{graphicx}
+
+\usepackage{tikz}
+\usepackage{fourier}
+
+\begin{document}
+    \tikzset{face/.style={fill=lightgray,draw=black,very thin,line join=round}}
+    \begin{tikzpicture}
+    	\path[face] (0,0) -- (1.75,0) -- (0,-3) -- cycle;
+        \path[face] (0,-3) -- (1.75,0) -- (2.5,-3) -- cycle;
+        \path[face] (4,0) -- (2.5,-3) -- (1.75,0) -- cycle;
+        \path[face] (4,0) -- (2.5,-3) -- (4,-3) -- cycle;
+    \end{tikzpicture}
+\end{document}
