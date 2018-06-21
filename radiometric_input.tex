@@ -1,0 +1,23 @@
+\documentclass[tikz, border=7pt]{standalone}
+
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+
+\usepackage{xcolor}
+
+\usepackage{tikz}
+\usepackage{fourier}
+
+\usetikzlibrary{calc, 3d}
+
+\begin{document}
+    \begin{tikzpicture}[x  = {(-0.5cm,-0.5cm)},
+                        y  = {(0.9659cm,-0.25882cm)},
+                        z  = {(0cm,1cm)},
+                        scale = 1,
+                        color = {lightgray}]
+        \begin{scope}[canvas is zy plane at x=0]
+          	\node (orthoimage) at (0,0) {};
+        \end{scope}
+    \end{tikzpicture}
+\end{document}
