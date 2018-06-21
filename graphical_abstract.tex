@@ -1,0 +1,31 @@
+\documentclass[tikz, border=7pt]{standalone}
+
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{fourier}
+
+\usepackage{xcolor}
+\usepackage{standalone}
+
+\usepackage{tikz}
+\usetikzlibrary{shapes, arrows, shadows, calc}
+
+\usepackage{amsmath}
+
+\tikzstyle{data}=[
+  draw,
+  font=\Large,
+  align=center,
+  minimum height=2.5em, 
+  drop shadow, 
+  rounded corners
+]
+
+\begin{document}
+    \begin{tikzpicture}
+    	\node (model) at (0,0) {\includestandalone[mode=buildnew, width=.5\textwidth]{building_model}};
+        \path (model.east) + (2.5,0) node[data] (geometric_features) {$v_{geom} = \begin{bmatrix}
+        v_1\\v_2\\ \vdots \\ v_g
+        \end{bmatrix}$};
+    \end{tikzpicture}
+\end{document}
