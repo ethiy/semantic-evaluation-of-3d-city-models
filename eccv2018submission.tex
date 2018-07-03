@@ -12,7 +12,17 @@
 \usepackage{graphicx}
 \usepackage{subfig}
 \usepackage{floatrow}
-\captionsetup{labelsep=period}
+
+\DeclareCaptionFont{tiny}{\tiny}
+\DeclareCaptionFont{scriptsize}{\scriptsize}
+\captionsetup[subtable]{labelfont={tiny, bf},textfont=normalfont,justification=raggedright}
+\captionsetup[subfigure]{labelfont={tiny, bf},textfont=tiny,justification=raggedright}
+
+\makeatletter
+\def\thesubfigure{\textit{\alph{subfigure}}}
+\providecommand\thefigsubsep{.}
+\def\p@subfigure{\@nameuse{thefigure}\thefigsubsep}
+\makeatother
 
 \usepackage{booktabs}
 \usepackage{standalone}
@@ -139,14 +149,14 @@ This study is, henceforth, narrowed to the aerial reconstruction case. The objec
 
 In our case, we evaluate $2.5$D buildings. We propose these \textit{atomic} errors:
 	\begin{itemize}
-		\item \textbf{Building errors family}:
+		\item \textbf{Building errors} family (\textit{c.f.} Figure~\ref{fig::bul_err}):
         \begin{itemize}
         	\item Under segmentation: two or more buildings are modeled as one;
             \item Over segmentation: one building is subdivided into two or more buildings;
             \item Inexact footprint: erroneous building footprint, where it groups geometric inaccuracies and topological defects as missing inner courts ($\equiv$ not the right number of polygon holes);
             \item Imprecise height: wrong building height estimation;
         \end{itemize}
-		\item \textbf{Facet errors family}:
+		\item \textbf{Facet errors} family (\textit{c.f.} Figure~\ref{fig::fac_err}):
         \begin{itemize}
         	\item Under segmentation: two or more facets are modeled as one;
             \item Over segmentation: one facet is subdivided into two or more facets;
@@ -162,45 +172,48 @@ In our case, we evaluate $2.5$D buildings. We propose these \textit{atomic} erro
                 \ffigbox[\FBwidth]
                 {
                     \begin{subfloatrow}[4]
-                        \captionsetup{labelformat=brace, justification=raggedright}
-                        \ffigbox[\FBwidth]{\caption{Under Segmentation.}\label{fig::under_bul}}{\includegraphics[height=.11\textheight]{images/Building_Errors/under_segmentation}}
-                        \ffigbox[\FBwidth]{\caption{Over segmentation.}\label{fig::over_bul}}{\includegraphics[height=.11\textheight]{images/Building_Errors/over_segmentation}}
-                        \ffigbox[\FBwidth]{\caption{Inexact footprint.}\label{fig::footprint}}{\includegraphics[height=.11\textheight]{images/Building_Errors/footprint}}
-                        \ffigbox[\FBwidth]{\caption{Imprecise height.}\label{fig::too_low}}{\includegraphics[height=.11\textheight]{images/Building_Errors/altimetric}}
+                        \ffigbox[\FBwidth]{\caption{\tiny Under segmentation.}\label{fig::under_bul}}{\includegraphics[height=.11\textheight]{images/Building_Errors/under_segmentation}}
+                        \ffigbox[\FBwidth]{\caption{\tiny Over segmentation.}\label{fig::over_bul}}{\includegraphics[height=.11\textheight]{images/Building_Errors/over_segmentation}}
+                        \ffigbox[\FBwidth]{\caption{\tiny Inexact footprint.}\label{fig::footprint}}{\includegraphics[height=.11\textheight]{images/Building_Errors/footprint}}
+                        \ffigbox[\FBwidth]{\caption{\tiny Imprecise height.}\label{fig::too_low}}{\includegraphics[height=.11\textheight]{images/Building_Errors/altimetric}}
                     \end{subfloatrow}
                 }
                 {
-                    \renewcommand\figurename{}
-                    \renewcommand{\thefigure}{(\roman{SubFigCounter})}
+                    \captionsetup{labelfont={tiny, bf},textfont=scriptsize,justification=raggedright, labelsep=period}
+                    \renewcommand{\thesubfigure}{\roman{SubFigCounter}}
 
-                    \caption{Building errors family samples.}\label{fig::bul_err}
+                    \captionof{subfigure}{\scriptsize Building errors family samples.}\label{fig::bul_err}
                     \refstepcounter{SubFigCounter}
+                    \addtocounter{figure}{-1}
                 }
                 \ffigbox[\FBwidth]
                 {
                     \begin{subfloatrow}[4]
-                        \captionsetup{labelformat=brace, justification=raggedright}
-                        \ffigbox[\FBwidth]{\caption{Under Segmentation.}\label{fig::under_fac}}{\includegraphics[height=.11\textheight]{images/Facet_Errors/under_segmentation}}
-                        \ffigbox[\FBwidth]{\caption{Over segmentation.}\label{fig::over_fac}}{\includegraphics[height=.11\textheight]{images/Facet_Errors/over_segmentation}}
-                        \ffigbox[\FBwidth]{\caption{Inexact segmentation.}\label{fig::mis}}{\includegraphics[height=.11\textheight]{images/Facet_Errors/mis_segmentation}}
-                        \ffigbox[\FBwidth]{\caption{Imprecise slope.}\label{fig::slope}}{\includegraphics[height=.11\textheight]{images/Facet_Errors/slope}}
+                        \ffigbox[\FBwidth]{\caption{\tiny Under Segmentation.}\label{fig::under_fac}}{\includegraphics[height=.11\textheight]{images/Facet_Errors/under_segmentation}}
+                        \ffigbox[\FBwidth]{\caption{\tiny Over segmentation.}\label{fig::over_fac}}{\includegraphics[height=.11\textheight]{images/Facet_Errors/over_segmentation}}
+                        \ffigbox[\FBwidth]{\caption{\tiny Inexact segmentation.}\label{fig::mis}}{\includegraphics[height=.11\textheight]{images/Facet_Errors/mis_segmentation}}
+                        \ffigbox[\FBwidth]{\caption{\tiny \scriptsize Imprecise slope.}\label{fig::slope}}{\includegraphics[height=.11\textheight]{images/Facet_Errors/slope}}
                     \end{subfloatrow}
                 }
                 {
-                    \renewcommand\figurename{}
-                    \renewcommand{\thefigure}{(\roman{SubFigCounter})}
+                	\captionsetup{labelfont={tiny, bf},textfont=scriptsize,justification=raggedright, labelsep=period}
+                    \renewcommand{\thesubfigure}{\roman{SubFigCounter}}
 
-                    \caption{Facet errors family samples.}\label{fig::fac_err}
+                    \captionof{subfigure}{\scriptsize Facet errors family samples.}\label{fig::fac_err}
                     \refstepcounter{SubFigCounter}
+                    \addtocounter{figure}{-1}
                 }
             }
             {
-                \addtocounter{figure}{-3}
                 \caption{\label{fig::samples}Error samples illustrated.}
             }
         \end{center}
     \end{figure}
-\subsection{Baseline Features}
+    
+    In the Figure~\ref{fig::samples}, we illustrate these errors. In (\ref{fig::under_bul}), Two building can be identified visually through the roof colors while they are grouped into one building. The contrary happens when a single building is subdivided in three parts as in (\ref{fig::over_bul}). The Inexact footprint can be detected easily when it ensues a wrongful outline as illustrated in the top right corner of (\ref{fig::footprint}). Depth information is hard to convey using images, as shown in (\ref{fig::too_low}), where the balcony, besides being detached form its building, has its height wrongly estimated due to the influence of the main building. Its also impossible to deduce the slope mis-evaluation without a depth map as is depicted in (\ref{fig::slope}). Another fidelity error can be seen in (\ref{fig::mis}), as the central edge that links the two main roof sides does not correspond to the image position. Facets can also suffer from over segmentation as both roof sides are in (\ref{fig::over_fac}). To complete the picture, (\ref{fig::under_fac}) offers a depiction of how a model roof facet can be under segmented.
+    
+\subsection{Features baseline}
+In order to predict errors, models need to be described using pertinent attributes. Since there is no comparable work predicting the described errors, this work offers a baseline of features to compare with. Different from~\cite{boudet2006supervised} and ~\cite{Michelin2013}, these features are kept very simple, based on depth map comparison, segment and image gradient pairing or intrinsic geometrical characteristics. The idea is to avoid heavy computations that are done in order to compute $3D$ lines~\cite{Michelin2013} or correlation scores~\cite{boudet2006supervised} after greedy image matching steps. The last features are also methodologically endogamous to the used $3D$ reconstruction techniques used to produce the same assessed models.
 \subsection{Classifiers}
 \section{Experiments}
 \subsection{Data}
