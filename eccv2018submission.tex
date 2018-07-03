@@ -25,6 +25,9 @@
 \newacronym{acr::lidar}{LiDAR}{Light Detection And Ranging}
 \newacronym{acr::dsm}{DSM}{Digital Surface Model}
 
+\newcounter{SubFigCounter}
+\setcounter{SubFigCounter}{1}
+
 \begin{document}
 
 \pagestyle{headings}
@@ -136,14 +139,14 @@ This study is, henceforth, narrowed to the aerial reconstruction case. The objec
 
 In our case, we evaluate $2.5$D buildings. We propose these \textit{atomic} errors:
 	\begin{itemize}
-		\item \textbf{Building errors}:
+		\item \textbf{Building errors family}:
         \begin{itemize}
         	\item Under segmentation: two or more buildings are modeled as one;
             \item Over segmentation: one building is subdivided into two or more buildings;
             \item Inexact footprint: erroneous building footprint, where it groups geometric inaccuracies and topological defects as missing inner courts ($\equiv$ not the right number of polygon holes);
             \item Imprecise height: wrong building height estimation;
         \end{itemize}
-		\item \textbf{Facet errors}:
+		\item \textbf{Facet errors family}:
         \begin{itemize}
         	\item Under segmentation: two or more facets are modeled as one;
             \item Over segmentation: one facet is subdivided into two or more facets;
@@ -160,40 +163,40 @@ In our case, we evaluate $2.5$D buildings. We propose these \textit{atomic} erro
                 {
                     \begin{subfloatrow}[4]
                         \captionsetup{labelformat=brace, justification=raggedright}
-                        \ffigbox[\FBwidth]{\caption{Under Segmentation: Two or more buildings grouped into one.}\label{fig::under_bul}}{\fbox{\includegraphics[width=.24\textwidth]{images/Building_Errors/under_segmentation}}}
-                        \ffigbox[\FBwidth]{\caption{Over segmentation: One building segmented into two or more buildings.}\label{fig::over_bul}}{\fbox{\includegraphics[width=.24\textwidth]{images/Building_Errors/over_segmentation}}}
-                        \ffigbox[\FBwidth]{\caption{Footprint: Wrong building footprint.}\label{fig::footprint}}{\fbox{\includegraphics[width=.24\textwidth]{images/Building_Errors/footprint}}}
-                        \ffigbox[\FBwidth]{\caption{Height: Wrong building height.}\label{fig::too_low}}{\fbox{\includegraphics[width=.24\textwidth]{images/Building_Errors/altimetric}}}
+                        \ffigbox[\FBwidth]{\caption{Under Segmentation.}\label{fig::under_bul}}{\fbox{\includegraphics[width=.24\textwidth]{images/Building_Errors/under_segmentation}}}
+                        \ffigbox[\FBwidth]{\caption{Over segmentation.}\label{fig::over_bul}}{\fbox{\includegraphics[width=.24\textwidth]{images/Building_Errors/over_segmentation}}}
+                        \ffigbox[\FBwidth]{\caption{Inexact footprint.}\label{fig::footprint}}{\fbox{\includegraphics[width=.24\textwidth]{images/Building_Errors/footprint}}}
+                        \ffigbox[\FBwidth]{\caption{Imprecise height.}\label{fig::too_low}}{\fbox{\includegraphics[width=.24\textwidth]{images/Building_Errors/altimetric}}}
                     \end{subfloatrow}
                 }
                 {
                     \renewcommand\figurename{}
                     \renewcommand{\thefigure}{(\roman{SubFigCounter})}
 
-                    \caption{Building errors samples.}\label{fig::bul_err}
+                    \caption{Building errors family samples.}\label{fig::bul_err}
                     \refstepcounter{SubFigCounter}
                 }
                 \ffigbox[\FBwidth]
                 {
                     \begin{subfloatrow}[4]
                         \captionsetup{labelformat=brace, justification=raggedright}
-                        \ffigbox[\FBwidth]{\caption{Under Segmentation: Two facets or more grouped into one.}\label{fig::under_fac}}{\fbox{\includegraphics[width=.24\textwidth]{images/Facet_Errors/under_segmentation}}}
-                        \ffigbox[\FBwidth]{\caption{Over segmentation: One facet segemented into two or more facets.}\label{fig::over_fac}}{\fbox{\includegraphics[width=.24\textwidth]{images/Facet_Errors/over_segmentation}}}
-                        \ffigbox[\FBwidth]{\caption{Mis Segmentation: Facet edges do not correspond to real ones.}\label{fig::mis}}{\fbox{\includegraphics[width=.24\textwidth]{images/Facet_Errors/mis_segmentation}}}
-                        \ffigbox[\FBwidth]{\caption{Slope: Wrong facet slope.}\label{fig::slope}}{\fbox{\includegraphics[width=.24\textwidth]{images/Facet_Errors/slope}}}
+                        \ffigbox[\FBwidth]{\caption{Under Segmentation.}\label{fig::under_fac}}{\fbox{\includegraphics[width=.24\textwidth]{images/Facet_Errors/under_segmentation}}}
+                        \ffigbox[\FBwidth]{\caption{Over segmentation.}\label{fig::over_fac}}{\fbox{\includegraphics[width=.24\textwidth]{images/Facet_Errors/over_segmentation}}}
+                        \ffigbox[\FBwidth]{\caption{Mis Segmentation.}\label{fig::mis}}{\fbox{\includegraphics[width=.24\textwidth]{images/Facet_Errors/mis_segmentation}}}
+                        \ffigbox[\FBwidth]{\caption{Imprecise slope.}\label{fig::slope}}{\fbox{\includegraphics[width=.24\textwidth]{images/Facet_Errors/slope}}}
                     \end{subfloatrow}
                 }
                 {
                     \renewcommand\figurename{}
                     \renewcommand{\thefigure}{(\roman{SubFigCounter})}
 
-                    \caption{Facet errors samples.}\label{fig::fac_err}
+                    \caption{Facet errors family samples.}\label{fig::fac_err}
                     \refstepcounter{SubFigCounter}
                 }
             }
             {
                 \addtocounter{figure}{-3}
-                \caption{\label{fig::samples}Error taxonomy illustration.}
+                \caption{\label{fig::samples}Error samples illustrated.}
             }
         \end{center}
     \end{figure}
