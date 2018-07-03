@@ -3,7 +3,7 @@
 
 \documentclass[runningheads]{llncs}
 
-\usepackage{amsmath,amssymb} % define this before the line numbering.
+\usepackage{amsmath,amssymb,mathrsfs}
 \usepackage{ruler}
 \usepackage{color}
 \usepackage[width=122mm,left=12mm,paperwidth=146mm,height=193mm,top=12mm,paperheight=217mm]{geometry}
@@ -213,7 +213,21 @@ In our case, we evaluate $2.5$D buildings. We propose these \textit{atomic} erro
     In the Figure~\ref{fig::samples}, we illustrate these errors. In (\ref{fig::under_bul}), Two building can be identified visually through the roof colors while they are grouped into one building. The contrary happens when a single building is subdivided in three parts as in (\ref{fig::over_bul}). The Inexact footprint can be detected easily when it ensues a wrongful outline as illustrated in the top right corner of (\ref{fig::footprint}). Depth information is hard to convey using images, as shown in (\ref{fig::too_low}), where the balcony, besides being detached form its building, has its height wrongly estimated due to the influence of the main building. Its also impossible to deduce the slope mis-evaluation without a depth map as is depicted in (\ref{fig::slope}). Another fidelity error can be seen in (\ref{fig::mis}), as the central edge that links the two main roof sides does not correspond to the image position. Facets can also suffer from over segmentation as both roof sides are in (\ref{fig::over_fac}). To complete the picture, (\ref{fig::under_fac}) offers a depiction of how a model roof facet can be under segmented.
 
 \subsection{Features baseline}
-In order to predict errors, models need to be described using pertinent attributes. Since there is no comparable work predicting the described errors, this work offers a baseline of features to compare with. Different from~\cite{boudet2006supervised} and ~\cite{Michelin2013}, these features are kept very simple, based on depth map comparison, segment and image gradient pairing or intrinsic geometrical characteristics. The idea is to avoid heavy computations that are done in order to compute $3D$ lines~\cite{Michelin2013} or correlation scores~\cite{boudet2006supervised} after greedy image matching steps. The last features are also methodologically endogamous to the used $3D$ reconstruction techniques used to produce the same assessed models.
+In order to predict errors, models need to be described using pertinent attributes. Since there is no comparable work predicting the described errors, this work offers a baseline of features to compare with. Different from~\cite{boudet2006supervised} and ~\cite{Michelin2013}, these features are kept very simple, based on depth map comparison, segment and image gradient pairing or intrinsic geometrical characteristics. The idea is to avoid heavy calculations involved in computing $3D$ lines~\cite{Michelin2013}, correlation scores~\cite{boudet2006supervised} or, in general, any greedy image matching based method. The last mentioned features are also methodologically endogamous to the $3D$ reconstruction techniques used to produce the same assessed models. In consequence, they can completely miss aspects of the reconstituted model evaluation.
+
+The presented approach offers another degree of freedom regarding the input data to be used in model evaluation. The model itself can be of use in order to discover errors based on its geometry compared to the dataset statistics. Depth information can be added, through a \acrshort{acr::dsm} , in order to help detect defects, especially depth related ones. Last but not least, orthoimages can bring additional information critical for semantic heavy segmentation evaluation. We describe each one of these modalities, herein, in detail.
+
+\subsubsection{Geometric features.}
+The model facets set is noted $\mathsf{V}$. When two facets $(f, g) \in \mathsf{V} \times \mathsf{V}$ are adjacent --- \textit{i.e.} they share a common edge --- we write $f \sim g$. The input building model can be seen as a graph:
+\begin{equation}
+	\label{eq::model_graph}
+	\mathscr{M} \equiv \Big(\mathsf{V}, \mathsf{E} \triangleq \big\{ (f, g) \in \mathsf{V} \times \mathsf{V} : f \sim g \big\} \Big)
+\end{equation}
+
+\subsubsection{Altimetric features.}
+
+\subsubsection{Radiometric features.}
+
 \subsection{Classifiers}
 \section{Experiments}
 \subsection{Data}
