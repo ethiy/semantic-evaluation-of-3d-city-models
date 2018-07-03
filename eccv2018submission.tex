@@ -8,8 +8,13 @@
 \usepackage{color}
 \usepackage[width=122mm,left=12mm,paperwidth=146mm,height=193mm,top=12mm,paperheight=217mm]{geometry}
 
+\usepackage{multirow}
 \usepackage{graphicx}
 \usepackage{float}
+\usepackage{subfig}
+\usepackage{floatrow}
+\captionsetup{labelsep=period}
+
 \usepackage{booktabs}
 \usepackage{standalone}
 
@@ -46,17 +51,17 @@
 \section{Introduction}
 
     3D urban models have a wide application range. They can be used for ludic purposes (video games or tourism) as much as they can be vital in more serious domains (for instance: run-off water and microclimate simulation or urban or security operations planification)~\cite{Biljecki2015},~\cite{Musialski2012}. Therefore, automatic urban reconstruction is the focus of both scientific research and industrial activity. However, the problem is still unresolved~\cite{Musialski2012},~\cite{rottensteiner2014results}. In fact, besides the seamless nature of reconstituted models, current algorithms are greedy in time, lack genericity --- regarding urban different possible urban scenes --- and produce a great deal of erroneous buildings. As such, human intervention is needed either in interaction within the reconstruction pipeline or as a post-processing clean-up step. The later being a long and tedious task~\cite{Musialski2012}, automatizing urban reconstruction evaluation can be helpful, especially in a production environement.\\
-    
+
     This work focuses on evaluating polyhedral building models resulting from urban reconstruction methods. Polyhedral models are more compact than triangle meshes extracted from mutliview images or point clouds. In consequence, these models hold more semantic information as each facet corresponds to a fa\c{c}ade, a roof or any well defined morphological building face. In counterpart, they are less efficient when it comes to fidelity to input data. Thus, reconstruction algorithms try to find a good compromise between compacity and semantics on one hand, and fidelity on the other. Depending on the input data spatial resolution, the urban scene in question and the aimed application, the reconstruction result has a certain \acrfull{acr::lod}~\cite{kolbe2005citygml}. A \acrshort{acr::lod} $1$ model is a simple building extrusion. A \acrshort{acr::lod} $2$ model considers geometric simplification of buildings, ignoring superstructures, such as dormer windows and chimneys. These are taken into account in the next \acrshort{acr::lod} $3$. We will stick, from hereon, to these \acrshort{acr::lod} definitions as in~\cite{verdie2015lod}, since \glspl{acr::lod} are still subject to discussion~\cite{2016_ceus_improved_lod}.\\
 
-     Finding a good reconstruction compromise involves answering some hard problems for which the solution is not guaranted to be found in polynomial time {\color{blue}(graph minimum cut~\cite{Taillandier2005},~\cite{Bredif2008} \dots)}. However, verifying these solutions could be answered much more easily. This motivates the need for a well suited quality assessement paradigm. Since the diagnosed models are well structured, an unrestricted evaluation based on data fidelity indices as in~\cite{berger2013benchmark}, is too general. It should also ignore format issues or geometric consistencies as studied in~\cite{ledoux2018val3dity}. In fact, these must be studied well before this stage. The semantic evaluation will only take into account building semantics through the detection and the categorization of modeling errors that can affect these buildings. The herein defined evaluation can, thus, be used for:
+     Finding a good reconstruction compromise involves answering some hard problems for which the solution is not guaranted to be found in polynomial time {\color{blue} (graph minimum cut~\cite{Taillandier2005},~\cite{Bredif2008} \dots)}. However, verifying these solutions could be answered much more easily. This motivates the need for a well suited quality assessement paradigm. Since the diagnosed models are well structured, an unrestricted evaluation based on data fidelity indices as in~\cite{berger2013benchmark}, is too general. It should also ignore format issues or geometric consistencies as studied in~\cite{ledoux2018val3dity}. In fact, these must be studied well before this stage. The semantic evaluation will only take into account building semantics through the detection and the categorization of modeling errors that can affect these buildings. The herein defined evaluation can, thus, be used for:
     \begin{itemize}
         \item \textbf{Building models correction}: automatically or interactively correct building models based on the detected errors;
         \item \textbf{Change detection}: where change can be considered as a modeling error or implicitly detected from other errors.
         \item \textbf{Reconstruction method selection}: based on the comparison of the designated algorithms performances on errors of interest;
         \item \textbf{Crowd-sourcing evaluation}: by categorizing user behaviors during crowd sourced modeling and vandalism detection.
     \end{itemize}
-    
+
     \begin{figure}
         \begin{center}
             \includestandalone[mode=buildnew, width=\textwidth]{graphical_abstract}
@@ -84,7 +89,7 @@ All quality assessment methods need a reference data to be matched with. Indeed,
 \subsubsection{Evaluation Output Types.}
 The quality assessment methods can produce two kinds of outputs:
 \begin{itemize}
-    \item \textbf{Geometric fidelity indices}: they can summarize the quality of the whole assessed model. These indices are computed at different scales: points of interest (such as corners or edge points) average precision~\cite{Kaartinen2005},~\cite{Voegtle2003}, surface discrepancy ~\cite{Kaartinen2005},~\cite{Henricsson1997},~\cite{Zeng2014},~\cite{Lafarge2012},~\cite{li2016boxfitting} or volume discrepancy to reference data~\cite{Zeng2014}. These outputs have the drawback of being too general for the special case of urban polyhedral models. In this case, far from surface reconstruction evaluation~\cite{berger2013benchmark}, we need to pinpoint specific types of errors that can be easily corrected once identified~\cite{OudeElberink2010}.
+    \item \textbf{Geometric fidelity indices}: they can summarize the quality of the whole assessed model. These indices are computed at different scales: points of interest (such as corners or edge points) average precision~\cite{Kaartinen2005},~\cite{Voegtle2003}, surface discrepancy~\cite{Kaartinen2005},~\cite{Henricsson1997},~\cite{Zeng2014},~\cite{Lafarge2012},~\cite{li2016boxfitting} or volume discrepancy to reference data~\cite{Zeng2014}. These outputs have the drawback of being too general for the special case of urban polyhedral models. In this case, far from surface reconstruction evaluation~\cite{berger2013benchmark}, we need to pinpoint specific types of errors that can be easily corrected once identified~\cite{OudeElberink2010}.
     \item \textbf{Semantic errors}: they identify topological and geometric errors that affect polyhedral models. One example of such taxonomy is the traffic light paradigm (correct acceptable, generalized and rejected)~\cite{boudet2006supervised}. However, these error depend on a vague definition of the ``generalized'' level. In addition, this taxonomy does not help to localize the model shortcomings. Another solution is to look at the issue at hand through the used reconstruction algorithm perspective. For instance, defects are arranged, in~\cite{Michelin2013}, into footprint errors (erroneous outline, inexistent building, missing inner court and imprecise footprint), intrinsic reconstruction errors (over segmentation, under segmentation, inexact roof and Z translation) and vegetation occlusion errors. In the later methods, the evaluation is the result of a supervised classification where predicted classes are defects listed in the taxonomy. Features are extracted from high spatial resolution (\SIrange{20}{25}{\cm}) oriented aerial images and \glspl{acr::dsm} by 3D segments and texture correlation scores comparison~\cite{boudet2006supervised},~\cite{Michelin2013}. In spite of the contribution with semantic information for quality evaluation, taxonomies can over-fit to a special urban scene or a reconstruction algorithm.
 \end{itemize}
 
@@ -108,7 +113,7 @@ At a first level, model qualifiability is studied. In fact, aside from formattin
 
 At the next \textit{finesse} level ($\textit{finesse} = 1$), a qualifiable building reconstruction correctness is predicted. It is the lowest level of semantization at which the evaluation of a model is expressed. It is either \textit{Valid} or \textit{Erroneous}.\\
 
-Model errors are to be grouped into three families depending on the underlying \acrshort{acr::lod}. The first family of errors (``\textit{Building Errors}'') affects the building in its entirety. It corresponds to an accuracy evaluation at $\acrshort{acr::lod}0\text{ } \cup \text{ }\acrshort{acr::lod}1$ . At the next $\acrshort{acr::lod}2$, the family error assembles defects that can damage fa\c{c}ade or roof fidelity. The last error family, \textit{i.e.} ``\textit{Superstructure Errors}'', describes errors that involve superstructures modeled at $\acrshort{acr::lod}3$.\\
+Model errors are to be grouped into three families depending on the underlying \acrshort{acr::lod}. The first family of errors (``\textit{Building Errors}'') affects the building in its entirety. It corresponds to an accuracy evaluation at $\acrshort{acr::lod}0\text{ } \cup \text{ }\acrshort{acr::lod}1$. At the next $\acrshort{acr::lod}2$, the family error assembles defects that can damage fa\c{c}ade or roof fidelity. The last error family, \textit{i.e.} ``\textit{Superstructure Errors}'', describes errors that involve superstructures modeled at $\acrshort{acr::lod}3$.\\
 
 Each family contain atomic errors of maximal $\textit{finesse} = 3$. These errors are semantically independent, although they can co-occur in the same building model, in the same error family as much as across different ones. They represent particular topological or geometric defects. Topological errors translate structurally inaccurate modeling, while geometric ones pick up geometric positioning inaccuracies.\\
 
@@ -147,27 +152,11 @@ In our case, we evaluate $2.5$D buildings. We propose these \textit{atomic} erro
             \item Imprecise slope: wrongful facet slope estimation.
         \end{itemize}
 	\end{itemize}
-    
+
     \thisfloatsetup{heightadjust=object}
     \begin{figure}[H]
         \begin{center}
             \ffigbox{
-                \ffigbox[\FBwidth]{
-                    \begin{subfloatrow}[4]
-                        \captionsetup{labelformat=brace, justification=raggedright}
-                        \ffigbox[\FBwidth]{\caption{Half Building: only a portion of the building is reconstructed.}\label{fig::half_building}}{\fbox{\includegraphics[width=.24\textwidth]{../images/raster/Unqualified_Errors/half_building}}}
-                        \ffigbox[\FBwidth]{\caption{Changed Building: the building has changed so we cannot qualify it.}\label{fig::changed}}{\fbox{\includegraphics[width=.24\textwidth]{../images/raster/Unqualified_Errors/changed}}}
-                        \ffigbox[\FBwidth]{\caption{Occlusion: the building is occluded by vegetation here.}\label{fig::occlusion}}{\fbox{\includegraphics[width=.24\textwidth]{../images/raster/Unqualified_Errors/occlusion}}}
-                        \ffigbox[\FBwidth]{\caption{Unknown: Unknown shape that cannot be verified on the ground.}\label{fig::unknown}}{\fbox{\includegraphics[width=.24\textwidth]{../images/raster/Unqualified_Errors/unknown}}}
-                    \end{subfloatrow}
-                }
-                {
-                    \renewcommand\figurename{}
-                    \renewcommand{\thefigure}{(\roman{SubFigCounter})}
-
-                    \caption{Unqualified building errors samples.}\label{fig::unq_bul}
-                    \refstepcounter{SubFigCounter}
-                }
                 \ffigbox[\FBwidth]
                 {
                     \begin{subfloatrow}[4]
