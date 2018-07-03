@@ -1,0 +1,80 @@
+\documentclass[tikz, border=10pt]{standalone}
+\usepackage[T1]{fontenc}
+
+\usepackage{tikz}
+\usetikzlibrary{trees}
+
+\begin{document}
+
+	\tikzstyle{level 1}=[level distance=3.5cm, sibling distance=3.5cm]
+    \tikzstyle{level 2}=[level distance=3.5cm, sibling distance=3.5cm]
+    \tikzstyle{level 3}=[level distance=4cm, sibling distance=3.5cm]
+    \tikzstyle{level 4}=[level distance=3cm, sibling distance=.75cm]
+
+    \tikzstyle{bag} = [text width=4em, text centered]
+    \tikzstyle{end} = [circle, minimum width=3pt,fill, inner sep=0pt]
+
+    \begin{tikzpicture}[grow=right]
+    	\node[bag] (input) {\textsc{Input}}
+        	child {
+            	node[end, label=right:\textsc{Unqualifiable}] (unqualifiable) {}
+            }
+            child {
+            	node[bag] (qualifiable) {Qualifiable}
+                	child {
+                        node[bag]{Error}
+                            child {
+                                node[bag] (building_errors) {Building Errors}
+                                child {
+                                	node[end, label=right:\textsc{Under segmentation}] (b_under) {}
+                                }
+                                child {
+                                	node[end, label=right:\textsc{Over segmentation}] {}
+                                }
+                                child {
+                                	node[end, label=right:\textsc{Inexact footprint}] {}
+                                }
+                                child {
+                                	node[end, label=right:\textsc{Imprecise height}] {}
+                                }
+                                edge from parent
+                            }
+                            child {
+                                node[bag] (facet_errors) {Facet Errors}
+                                child {
+                                	node[end, label=right:\textsc{Under segmentation}] {}
+                                }
+                                child {
+                                	node[end, label=right:\textsc{Over segmentation}] {}
+                                }
+                                child {
+                                	node[end, label=right:\textsc{Inexact segmentation}] {}
+                                }
+                                child {
+                                	node[end, label=right:\textsc{Imprecise slope}] {}
+                                }
+                                edge from parent
+                            }
+                        edge from parent
+                    }
+                    child {
+                        node[end, label=right:\textsc{Valid}] (valid) {}
+                    }
+                edge from parent
+            };
+        
+        \path (qualifiable |- valid.north) + (-1.5,1) node (qualifiability_max) {$\textit{finesse}=0$};
+        \path (valid.north) + (-.75,1) node (correctness_max) {$\textit{finesse}=1$};
+        \path (facet_errors |- valid.north) + (-1.5,1) node (families_max) {$\textit{finesse}=2$};
+        \path (b_under |- valid.north) + (-1,1) node (atomic_max) {$\textit{finesse}=3$};
+        \path (facet_errors |- input) node (lod_max) {};
+        \path (b_under |- input) + (6,0) node (lod_min) {};
+        
+    	\draw[dashed, orange, ultra thick] (unqualifiable |- b_under.south) + (-1.5,-1) -- (qualifiability_max);
+        \draw[dashed, green, ultra thick] (valid |- b_under.south) + (-.75,-1) -- (correctness_max);
+        \draw[dashed, purple, ultra thick] (facet_errors |- b_under.south) + (-1.5,-1) -- (families_max);
+        \draw[dashed, blue, ultra thick] (b_under.south) + (-1,-1) -- (atomic_max);
+        
+        \draw[dash dot, ultra thick] (lod_max)  -- (lod_min) node[below, align=left, xshift=-1cm] {\scriptsize LoD0 $\cup$ LoD1} node [above, xshift=-.5cm] {\scriptsize LoD2}; 
+    \end{tikzpicture}
+\end{document}

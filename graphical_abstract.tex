@@ -9,8 +9,10 @@
 
 \usepackage{standalone}
 
+\usepackage{pgfplots}
+
 \usepackage{tikz}
-\usetikzlibrary{shapes, arrows, shadows, calc}
+\usetikzlibrary{shapes, arrows, shadows, calc, decorations}
 
 \usepackage{amsmath}
 
@@ -23,62 +25,34 @@
   rounded corners
 ]
 
+\pgfplotsset{compat=1.14}
+
 \begin{document}
 	\pgfdeclarelayer{background}
     \pgfdeclarelayer{foreground}
     \pgfsetlayers{background,main,foreground}
 
     \begin{tikzpicture}
-    	\node (model) at (0,0) {\includestandalone[mode=buildnew, width=4cm]{building_model}};
-        \path (model.east) + (14,0) node[data, fill={rgb,255:red,239;green,230;blue,28}, text=black] (geometric_features) {$v_{geom} = \begin{bmatrix}
-        v_1\\v_2\\ \vdots \\ v_g
-        \end{bmatrix}$};
-
-        \path (model.south east) + (4, -4) node (dsm) {\fbox{\includegraphics[width=4cm]{images/dsm_elanc}}};
-        \path (dsm.north east) + (3, 1) node (simulated_dsm) {\fbox{\includegraphics[width=2cm]{images/simulated_dsm}}};
-        \path (simulated_dsm.south |-  dsm) node (extrac_dsm) {\fbox{\includegraphics[width=2cm]{images/dsm}}};
-        \path (geometric_features |- dsm) node[data, fill={rgb,255:red,239;green,230;blue,28}, text=black] (altimetric_features) {$v_{alti} = \begin{bmatrix}
-        v_1\\v_2\\ \vdots \\ v_a
-        \end{bmatrix}$};
-
-        \path (dsm.south) + (0, -6) node (orthoimage) {\fbox{\includegraphics[width=4cm]{images/ortho_elanc}}};
-        \path (orthoimage.north east) + (3, 1) node (projection) {\includestandalone[mode=buildnew, width=2cm]{model_projection}};
-        \path (simulated_dsm |- orthoimage) node (extrac_ortho) {\fbox{\includegraphics[width=2cm]{images/orthoimage}}};
-        \path (geometric_features |- orthoimage.east) node[data, fill={rgb,255:red,239;green,230;blue,28}, text=black] (radiometric_features) {$v_{radio} = \begin{bmatrix}
-        v_1\\v_2\\ \vdots \\ v_r
-        \end{bmatrix}$};
-
-        \path (altimetric_features.east) + (6,0) node[data, fill={rgb,255:red,56;green,88;blue,140}, text=wheat] (features) {$feats = \begin{bmatrix}
-        v_1\\v_2\\ \vdots\\ \vdots \\ v_{g+a+r}
-        \end{bmatrix}$};
-        \path (features) + (6,0) node[data, fill={rgb,255:red,69;green,50;blue,126}, text=white, text width=2cm] (errors) {\textsc{Error\\ list}};
+    	\node (residual) at (0,0) {\includegraphics[height=1cm, angle=270]{images/residual}};
+        \path (residual.south) + (0,-.2) node (residual_legend) {\tiny Altimetric.};
         
-        \path[draw, ->, line width=1mm, rounded corners=10pt, orange] (model.east) -- (geometric_features.west);
-        \path[draw, ->, line width=1mm, rounded corners=10pt, black, dashed] (model.south) |- (simulated_dsm.west);
-		\path[draw, ->, line width=1mm, rounded corners=10pt, black, dashed] (orthoimage.east)-- (extrac_ortho.west);
-        \path[draw, ->, line width=1mm, rounded corners=10pt, black, dashed] (model.south) |- (projection.west);
-		\path[draw, ->, line width=1mm, rounded corners=10pt, black, dashed] (dsm.east)-- (extrac_dsm.west);
-				
-		\path[draw, ->, line width=1mm, rounded corners=10pt, orange, dashed] (extrac_ortho.east) -- (radiometric_features.west);
-		\path[draw, ->, line width=1mm, rounded corners=10pt, orange, dashed] (projection.east) -| ($(projection.east) ! .6 ! (radiometric_features.west)$) |- (radiometric_features.west);
-		
-		\path[draw, ->, line width=1mm, rounded corners=10pt, orange, dashed] (extrac_dsm.east) -- (altimetric_features.west);
-		\path[draw, ->, line width=1mm, rounded corners=10pt, orange, dashed] (simulated_dsm.east) -| ($(simulated_dsm.east) ! .6 ! (altimetric_features.west)$) |- (altimetric_features.west);
-		
+        \path (residual.west) + (-.8,0) node (facet_graph) {\includestandalone[mode=buildnew, height=1cm]{building_graph}};
+        \path (facet_graph |- residual_legend) + (0,-.05) node (facet_graph_legend) {\tiny Geometric.};
 
-		\path[draw, ->, line width=1mm, rounded corners=10pt, black!50!green, dashed] (altimetric_features.east) -- (features.west);
-		\path[draw, ->, line width=1mm, rounded corners=10pt, black!50!green, dashed] (radiometric_features.east) -| ($(radiometric_features.east) ! .5 ! (features.west)$) |- (features.west);
-		\path[draw, ->, line width=1mm, rounded corners=10pt, black!50!green] (geometric_features.east) -| ($(geometric_features.east) ! .5 ! (features.west)$) |- (features.west);
-				
-		\path[draw, ->, line width=1mm, rounded corners=10pt, red!80] (features.east) -- (errors.west);
+        \path (facet_graph.west) + (-1,0) node (model) {\includestandalone[mode=buildnew, height=1cm]{building_model}};
+        \path (model |- residual_legend) node (model_legend) {\tiny Input model.};
+        
+        \path (residual.east) + (.8,0) node (ortho_projection) {\includegraphics[height=1cm, angle=270]{images/orthoprojection}};
+        \path (ortho_projection |- residual_legend) node (orthoprojection_legend) {\tiny Radiometric.};
+        
+        \draw[decorate, decoration={brace, amplitude=3pt}] (facet_graph.north west) -- (ortho_projection.east |- facet_graph.north) node[midway, auto]{\tiny Features};
 
-	\begin{pgfonlayer}{background}
-            \path (model.west |- simulated_dsm.north)+(-.25,.25) node (opta) {};
-            \path (radiometric_features.east |- orthoimage.south)+(1,-0.25) node (optb) {};
-
-            \path[fill=green!20, fill opacity=.5, rounded corners, draw=black!50, dashed]
-                (opta) rectangle (optb);
-            \path (opta.east |- optb.north)+(1,.5) node  {\Large Optional};
-        \end{pgfonlayer}
+		\path (ortho_projection.east) + (1,0) node (errors) {\includestandalone[mode=buildnew, height=1cm]{building_errors}};
+        \path (errors |- residual_legend) node (errors_legend) {\tiny Erroneous building:};
+        \path (errors_legend.south) + (0,-.1) node[align=left] (errors_list) {\tiny {\color{red}$\blacksquare$ Fidelity error}.};
+         \path (errors_list.south) node[align=left] (errors_list) {\tiny {\color{blue}$\blacksquare$ Modelling error}.};
+         
+         \path[draw, ->, line width=1pt, rounded corners=10pt, green] (model.east) -- (facet_graph.west);
+         \path[draw, ->, line width=1pt, rounded corners=10pt, green] (ortho_projection.east) -- (errors.west);
     \end{tikzpicture}
 \end{document}
