@@ -67,7 +67,7 @@
         \path (valid.north) + (-.75,1) node (correctness_max) {$\textit{finesse}=1$};
         \path (facet_errors |- valid.north) + (-1.5,1) node (families_max) {$\textit{finesse}=2$};
         \path (b_under |- valid.north) + (-1,1) node (atomic_max) {$\textit{finesse}=3$};
-        \path (facet_errors |- input) node (lod_max) {};
+        \path (facet_errors |- input) + (-1.5,0) node (lod_max) {};
         \path (b_under |- input) + (6,0) node (lod_min) {};
         
     	\draw[dashed, orange, ultra thick] (unqualifiable |- b_under.south) + (-1.5,-1) -- (qualifiability_max);
