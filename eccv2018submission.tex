@@ -15,8 +15,8 @@
 
 \DeclareCaptionFont{tiny}{\tiny}
 \DeclareCaptionFont{scriptsize}{\scriptsize}
-\captionsetup[subtable]{labelfont={tiny, bf},textfont=normalfont,justification=raggedright}
-\captionsetup[subfigure]{labelfont={tiny, bf},textfont=tiny,justification=raggedright}
+\captionsetup[subtable]{labelfont={tiny, bf},textfont=normalfont,singlelinecheck=on}
+\captionsetup[subfigure]{labelfont={tiny, bf},textfont=tiny,singlelinecheck=on}
 
 \makeatletter
 \def\thesubfigure{\textit{\alph{subfigure}}}
@@ -136,7 +136,7 @@ At evaluation time, three parameters play a role in determining which error labe
 \subsubsection{Application diversity.}
 Depending on the application of the reconstructed buildings, a set of errors can be judged irrelevant. For instance, for an urban planner that studies run-off water simulation, instantiating each building depending on its ownership might seem unnecessary. However a house insurer will be interested at knowing which building might be affected after a flood, in order to estimate the ensuing pecuniary loss. That is why the evaluation framework should be as open as much as final application diversity.
 
-The presented taxonomy structure offers a great number of levers for that sake while being agnostic to these applications. Defects can be filtered out by fixing the previously defined parameters. It can also be refined by simply thresholding over them. A more subtle way of leveraging these scores is to ask the final user to reannotate model errors by attributing scores based on their model use. This can be done offline, but also in an active semi-supervized setting taking advantage of model precomputed similarities.
+The presented taxonomy structure offers a great number of levers for that sake while being agnostic to these applications. Defects can be filtered out by fixing the previously defined parameters. It can also be refined by simply thresholding over them. A more subtle way of leveraging these scores is to ask the final user to reannotate model errors by attributing scores based on their model use. This can be done offline, but also in an active semi-supervised setting taking advantage of model precomputed similarities.
 
 \subsubsection{The aerial reconstruction case.}
   \begin{figure}
@@ -192,7 +192,7 @@ In our case, we evaluate $2.5$D buildings. We propose these \textit{atomic} erro
                         \ffigbox[\FBwidth]{\caption{\tiny Under Segmentation.}\label{fig::under_fac}}{\includegraphics[height=.11\textheight]{images/Facet_Errors/under_segmentation}}
                         \ffigbox[\FBwidth]{\caption{\tiny Over segmentation.}\label{fig::over_fac}}{\includegraphics[height=.11\textheight]{images/Facet_Errors/over_segmentation}}
                         \ffigbox[\FBwidth]{\caption{\tiny Inexact segmentation.}\label{fig::mis}}{\includegraphics[height=.11\textheight]{images/Facet_Errors/mis_segmentation}}
-                        \ffigbox[\FBwidth]{\caption{\tiny \scriptsize Imprecise slope.}\label{fig::slope}}{\includegraphics[height=.11\textheight]{images/Facet_Errors/slope}}
+                        \ffigbox[\FBwidth]{\caption{\tiny Imprecise slope.}\label{fig::slope}}{\includegraphics[height=.11\textheight]{images/Facet_Errors/slope}}
                     \end{subfloatrow}
                 }
                 {
@@ -248,20 +248,40 @@ For this modality, the depth information is provided as a float encoded image $d
 \end{equation}
 Equation~\ref{eq::alti_feat} summarizes how building altimetric features are computed. The $\mathrm{vec}$ operator represents the matrix vectorization operator. As with geometric attributes, this map loses structure representing models.
 \subsubsection{Radiometric features.}
+Building edges correspond to sharp discontinuities in images. The idea is to compare these edges to local gradients in order to look for inconsistencies. In an ideal setting, gradients computed at pixels $g$ of an image\footnote{containing the building} $I \in \mathbb{R}^l \otimes \mathbb{R}^w$ that intersect any segment $s$ from the building projection (\ref{fig::radio}) will almost be collinear with its normal. We qualify, using a histogram $S_p$ for a certain fixed parameter $p \in \mathscr{P}$, the distribution of the scalar product of the normalized gradient with the normal all along a segment:
+\begin{equation}
+	\label{eq::corr_seg}
+    \mathsf{D}_p(s, I) \triangleq S_p \bigg( \Big(\frac{\nabla I(g) \cdot \vec{n}(s)}{\Vert \nabla I(g)\Vert})_{g \in I \textrm{ and } g \cap s} \Big)\bigg)
+\end{equation}
+Once the distribution is computed over a segment, it is compiled over all facet edges to define the distribution over projected facets. In the case of histograms, it is equivalent to summing out the previous vectors $\mathsf{D}_p(s, I)$ over segments $s$ forming the polygon projection $q(f)$ of the facet $f$. In order to take into account the variability of segment dimensions, this sum can be weighted by segment lengths.
+\begin{equation}
+	\label{eq::corr_fac}
+	D_p(f, I) \triangleq \sum_{s \in q(f)} \Vert s \Vert \cdot \mathsf{D}_p(s, I)
+\end{equation}
+
+The same reduction can be done over all facets of a building, resulting in equation ~\ref{eq::corr_bul}. Once again, the structure of the model is lost when simply averaging over all segments.
+\begin{equation}
+	\label{eq::corr_bul}
+	v_{radiometric}(\mathsf{M}) = D_p(\mathsf{M}, I) \triangleq \sum_{f \in \mathsf{F}} \mathscr{A}(q(f)) \cdot \mathsf{D}_p(f, I)
+\end{equation}
+
 
 \begin{figure}[H]
-	\begin{subfigure}{.48\textwidth}
-		\includegraphics[width=\textwidth]{images/orthoprojection}
-		\caption{\label{fig::ortho_sup} A building projection and the corresponding orthoimage.}
-	\end{subfigure}
-	\begin{subfigure}{.48\textwidth}
-		\includestandalone[mode=buildnew, width=\textwidth]{radiometric_features}
-		\caption{\label{fig::hist} We compute, for each segment in each facet, the scalar product of each intersecting pixel (in green) with the normalized image gradient at the same pixel.}
-	\end{subfigure}
-	\caption{\label{fig::radiometric} Radiometric features illustration.}
+	\begin{center}
+    	\floatbox{figure}{
+            \begin{subfloatrow}[2]
+                \ffigbox[\FBwidth]{\caption{\tiny The building projection compared to the orthoimage.}\label{fig::radio}}{\includegraphics[width=.33\textwidth]{images/radio_vector}}
+                \ffigbox[\FBwidth]{\caption{\tiny The green squares represent intersecting pixels with the red segment. The gradient in purple is compared to the segment normal in black.}\label{fig::seg_inter}}{\includestandalone[mode=buildnew, width=.33\textwidth]{radiometric_features}}
+            \end{subfloatrow}
+        }{
+        	\caption{Radiometric features illustration.} \label{fig::radiometric}
+        }
+	\end{center}
 \end{figure}
 
 \subsection{Classifiers}
+
+
 \section{Experiments}
 \subsection{Data}
 \subsection{Results}
