@@ -137,7 +137,7 @@ At evaluation time, three parameters play a role in determining which error labe
 \begin{itemize}
     \item The first is the \textbf{\acrfull{acr::elod}}. Every reconstruction method targets a certain set of \glspl{acr::lod}. They can then be evaluated at multiple levels. In consequence, when assessing a reconstruction, a \acrshort{acr::lod} must be specified. At a predefined \acrshort{acr::elod}, all error families involving higher order details will be ignored.
     \item Depending on the final use of qualification, a \textbf{finesse} level might be preferred. This second evaluation parameter specifies the appropriate semantic level at which errors will be reported.
-    \item The last one is error \textbf{exclusivity}. This family error hierarchization is based on the modeling minuteness. If errors of a certain \acrshort{acr::lod} are detected, the more detailed ones are considered meaningless and thus are not reported.
+    \item The last one is error \textbf{exclusivity}. It is based on family error hierarchization. If errors of a certain \acrshort{acr::lod} are detected, the more detailed ones are considered meaningless and thus are not reported.
 \end{itemize}
 
 \subsubsection{Application diversity.}
