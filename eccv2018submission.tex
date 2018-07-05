@@ -113,7 +113,7 @@ This work aims at devising a suitable quality evaluation paradigm when no refere
 
 To evaluate reconstructed input models, an error taxonomy is established. Depending on the evaluation objectives, we deduce error labels that will be used to predict model defects. Buildings are thus annotated in order to train a supervised classifier model that will be used for prediction on other reconstructed models.
 
-The error taxonomy is \textbf{agnostic} towards reconstructed inputs\footnote{produced using any modeling method over all urban scenes} and \textbf{parameterizable}. This flexibility and independence means that, at runtime, the evaluation process does not involve heavy computing. Furthermore, it does not require any heavy reference data aside the annotated objects on which the classifier is trained.
+The error taxonomy is \textbf{agnostic} towards reconstructed inputs\footnote{produced using any modeling method over all possible urban scenes} and \textbf{parameterizable}. This flexibility and independence means that, at runtime, the evaluation process does not involve heavy computing. Furthermore, it does not require any heavy reference data aside the annotated objects on which the classifier is trained.
 
 The quality assessment pipeline is also modular. Building models are represented by intrinsic geometric features extracted from the model facets graph. If available, the classifier can also be fed additional depth related features, based on the comparison of the model altimetry and the \acrshort{acr::dsm}, in case of aerial reconstruction, or, in general, any depth map comparison. Last but not least, radiometric information can be incorporated to the pipeline through aerial (orthorectified or oriented) or street view images.
 
