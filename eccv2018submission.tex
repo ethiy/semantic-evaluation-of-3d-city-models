@@ -24,7 +24,11 @@
 \def\p@subfigure{\@nameuse{thefigure}\thefigsubsep}
 \makeatother
 
+\usepackage{array}
+\newcolumntype{x}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}p{#1}}
+\usepackage{tabulary}
 \usepackage{booktabs}
+
 \usepackage{standalone}
 
 \usepackage{siunitx}
@@ -106,7 +110,7 @@ The quality assessment methods can produce two kinds of outputs:
     \item \textbf{Semantic errors}: they identify topological and geometric errors that affect polyhedral models. One example of such taxonomy is the traffic light paradigm (``correct'', ``acceptable'', ``generalized'' and ``rejected'')~\cite{boudet2006supervised}. However, these errors depend on a vague definition of the ``generalized'' level at which models are rejected. In addition, this taxonomy does not help to localize the model shortcomings. Another solution is to look at the issue at hand through the used reconstruction algorithm perspective. For instance, defects are discriminated in~\cite{Michelin2013} between footprint errors (``erroneous outline'', ``inexistent building'', ``missing inner court'' and ``imprecise footprint''), intrinsic reconstruction errors (``over segmentation'', ``under segmentation'', ``inexact roof'' and ``Z translation'') and ``vegetation occlusion'' errors. In the later methods~\cite{boudet2006supervised},~\cite{Michelin2013}, the evaluation is the result of a supervised classification where predicted classes are defects listed in a taxonomy. Features used for the ensuing classification are extracted from high spatial resolution (\SIrange{20}{25}{\cm}) oriented aerial images and \glspl{acr::dsm} like 3D segments and texture correlation scores comparison. In spite of their semantic contribution for quality evaluation, taxonomies risk overfitting to special urban scenes or some reconstruction algorithm.
 \end{itemize}
 
-\subsubsection{Main idea.}
+\subsubsection{Main objective.}
 This work aims at devising a suitable quality evaluation paradigm when no reference data or only the less structured ones can be provided. It should also be capable of detecting semantic localized errors independently from the used reconstruction methods or the assessed urban scenes.
 
 \section{Problem Formulation}
@@ -115,7 +119,7 @@ To evaluate reconstructed input models, an error taxonomy is established. Depend
 
 The error taxonomy is \textbf{agnostic} towards reconstructed inputs\footnote{produced using any modeling method over all possible urban scenes} and \textbf{parameterizable}. This flexibility and independence means that, at runtime, the evaluation process does not involve heavy computing. Furthermore, it does not require any heavy reference data aside the annotated objects on which the classifier is trained.
 
-The quality assessment pipeline is also modular. Building models are represented by intrinsic geometric features extracted from the model facets graph. If available, the classifier can also be fed additional depth related features, based on the comparison of the model altimetry and the \acrshort{acr::dsm}, in case of aerial reconstruction, or, in general, any depth map comparison. Last but not least, radiometric information can be incorporated to the pipeline through aerial (orthorectified or oriented) or street view images.
+The quality assessment pipeline is also \textbf{modular}. Building models are represented by intrinsic geometric features extracted from the model facets graph. If available, the classifier can also be fed additional depth related features, based on the comparison of the model altimetry and the \acrshort{acr::dsm}, in case of aerial reconstruction, or, in general, any depth map comparison. Last but not least, radiometric information can be incorporated to the pipeline through aerial (orthorectified or oriented) or street view images.
 
 \subsection{Error Taxonomy}
 In order to build a generic and flexible taxonomy, we rely on two criteria for error compilation: the building model \acrshort{acr::lod} and the error semantic level, named henceforth \textit{finesse} (\textit{c.f.} Figure~\ref{fig::taxonomy}). Each \textit{finesse} is associated to a natural integer starting from $0$. Errors with maximal \textit{finesse} are called \textit{atomic} errors. These last defects could be correlated, heuristically, to unit actions from an operator, or an algorithm, needed to correct the input model.
@@ -140,11 +144,6 @@ At evaluation time, three parameters play a role in determining which error labe
     \item The last one is error \textbf{exclusivity}. It is based on family error hierarchization. If errors of a certain \acrshort{acr::lod} are detected, the more detailed ones are considered meaningless and thus are not reported.
 \end{itemize}
 
-\subsubsection{Application diversity.}
-Depending on the application of the reconstructed buildings, a set of errors can be judged irrelevant. For instance, for an urban planner that studies run-off water simulation, instantiating each building depending on its ownership might seem unnecessary. However a house insurer will be interested at knowing which building might be affected after a flood, in order to estimate the ensuing pecuniary loss. That is why the evaluation framework should be as open as much as final application diversity.
-
-The presented taxonomy structure offers a great number of levers for that sake while being agnostic to these applications. Defects can be filtered out by fixing the previously defined parameters. It can also be refined by simply thresholding over them. A more subtle way of leveraging these scores is to ask the final user to reannotate model errors by attributing scores based on their model use. This can be done offline, but also in an active semi-supervised setting taking advantage of model precomputed similarities.
-
 \subsubsection{The aerial reconstruction case.}
   \begin{figure}
         \begin{center}
@@ -154,13 +153,13 @@ The presented taxonomy structure offers a great number of levers for that sake w
     \end{figure}
 This study is, henceforth, narrowed to the aerial reconstruction case. The objective is to reconstruct large urban scenes using aerial oriented images and, if available, \acrshort{acr::lidar} point clouds. We will use these data  to confront with the modeled buildings.
 
-In our case, we evaluate $2.5$D buildings. We propose these \textit{atomic} errors:
+In the present case, $2.5$D buildings are evaluated. These \textit{atomic} errors are proposed:
 	\begin{itemize}
 		\item \textbf{Building errors} family (\textit{c.f.} Figure~\ref{fig::bul_err}):
         \begin{itemize}
         	\item Under segmentation: two or more buildings are modeled as one;
             \item Over segmentation: one building is subdivided into two or more buildings;
-            \item Inexact footprint: erroneous building footprint, where it groups geometric inaccuracies and topological defects as missing inner courts ($\equiv$ not the right number of polygon holes);
+            \item Inexact footprint: erroneous building footprint, grouping geometric inaccuracies and topological defects as missing inner courts ($\equiv$ not the right number of polygon holes);
             \item Imprecise height: wrong building height estimation;
         \end{itemize}
 		\item \textbf{Facet errors} family (\textit{c.f.} Figure~\ref{fig::fac_err}):
@@ -168,7 +167,7 @@ In our case, we evaluate $2.5$D buildings. We propose these \textit{atomic} erro
         	\item Under segmentation: two or more facets are modeled as one;
             \item Over segmentation: one facet is subdivided into two or more facets;
             \item Inexact segmentation: facet edges are inaccurate;
-            \item Imprecise slope: wrongful facet slope estimation.
+            \item Imprecise slope: wrong facet slope estimation.
         \end{itemize}
 	\end{itemize}
 
@@ -217,56 +216,57 @@ In our case, we evaluate $2.5$D buildings. We propose these \textit{atomic} erro
         \end{center}
     \end{figure}
 
-    In the Figure~\ref{fig::samples}, we illustrate these errors. In (\ref{fig::under_bul}), Two building can be identified visually through the roof colors while they are grouped into one building. The contrary happens when a single building is subdivided in three parts as in (\ref{fig::over_bul}). The Inexact footprint can be detected easily when it ensues a wrongful outline as illustrated in the top right corner of (\ref{fig::footprint}). Depth information is hard to convey using images, as shown in (\ref{fig::too_low}), where the balcony, besides being detached form its building, has its height wrongly estimated due to the influence of the main building. Its also impossible to deduce the slope mis-evaluation without a depth map as is depicted in (\ref{fig::slope}). Another fidelity error can be seen in (\ref{fig::mis}), as the central edge that links the two main roof sides does not correspond to the image position. Facets can also suffer from over segmentation as both roof sides are in (\ref{fig::over_fac}). To complete the picture, (\ref{fig::under_fac}) offers a depiction of how a model roof facet can be under segmented.
+    Figure~\ref{fig::samples} illustrates these errors. In (\ref{fig::under_bul}), Two distinct buildings can be identified visually while they are grouped into one building. The contrary happens when a single building is subdivided in three parts as in (\ref{fig::over_bul}). The Inexact footprint can be detected easily when it ensues a wrong outline as illustrated in the top right corner of (\ref{fig::footprint}). Depth information is hard to convey using images, as shown in (\ref{fig::too_low}), where the balcony, besides being detached form its building, has its height wrongly estimated due to the influence of the main building. It is also impossible to deduce the slope mis-evaluation without a depth map as depicted in (\ref{fig::slope}). Another fidelity error can be seen in (\ref{fig::mis}), as the central edge that links the two main roof sides does not correspond to the image position. Facets can also suffer from over segmentation as both roof sides are in (\ref{fig::over_fac}). To complete the picture, (\ref{fig::under_fac}) offers a depiction of how a model roof facet can be under segmented.
 
 \subsection{Features baseline}
-In order to predict errors, models need to be described using pertinent attributes. Since there is no comparable work predicting the described errors, this work offers a baseline of features to compare with. Different from~\cite{boudet2006supervised} and~\cite{Michelin2013}, these features are kept very simple, based on depth map comparison, segment and image gradient pairing or intrinsic geometrical characteristics. The idea is to avoid heavy calculations involved in computing $3D$ lines~\cite{Michelin2013}, correlation scores~\cite{boudet2006supervised} or, in general, any greedy image matching based method. The last mentioned features are also methodologically endogamous to the $3D$ reconstruction techniques used to produce the same assessed models. In consequence, they can completely miss aspects of the reconstituted model evaluation.
+In order to predict errors, models need to be described using pertinent attributes. Since there is no comparable work predicting the described errors, this work proposes a baseline of features. At present, they are kept very simple, based on depth map comparison, segment and image gradient pairing or model intrinsic geometrical characteristics. The idea is to avoid computing $3D$ lines~\cite{Michelin2013}, correlation scores~\cite{boudet2006supervised} or, in general, any greedy image matching based method. In addition, these are methodologically endogamous to the $3D$ reconstruction techniques used to produce the same assessed models. In consequence, they can completely miss aspects of the reconstituted model evaluation.
 
-The presented approach offers another degree of freedom regarding the input data to be used in model evaluation. The model itself can be of use in order to discover errors based on its geometry compared to the dataset statistics. Depth information can be added, through a \acrshort{acr::dsm}, in order to help detect defects, especially depth related ones. Last but not least, orthoimages can bring additional information critical for semantic heavy segmentation evaluation. We describe each one of these modalities, herein, in detail.
+The presented approach offers another degree of freedom regarding the input data to be used in model evaluation. The model itself can be of use in order to discover errors based on its geometry compared to the dataset statistics. Depth information can be added, through a \acrshort{acr::dsm}, in order to help detecting defects, especially depth related ones. Last but not least, orthorectified images can bring additional information critical for semantic heavy segmentation evaluation. Each modality is described herein in detail.
 
 \subsubsection{Geometric features.}
-The model facets set is noted $\mathsf{F}$. When two facets $(f, g) \in \mathsf{F} \times \mathsf{F}$ are adjacent --- \textit{i.e.} they share a common edge --- we write $f \sim g$. The input building model can be seen as a graph:
+The model facet set is noted $\mathsf{F}$. $\forall (f, g) \in \mathsf{F} \times \mathsf{F} \quad f \sim g$ correspond to facets $f$ and $g$ being adjacent: \textit{i.e.} they share a common edge. The input building model can be seen as a facet (dual) graph:
 \begin{equation}
 	\label{eq::model_graph}
 	\mathsf{M} \equiv \Big(\mathsf{F}, \mathsf{E} \triangleq \big\{ (f, g) \in \mathsf{F} \times \mathsf{F} : f \sim g \big\} \Big)
 \end{equation}
-For each facet $f \in \mathsf{F}$, we compute its degree (\textit{i.e.} number of vertices; $d(f) \triangleq \vert\{v : v\text{ is a vertex of }f\}\vert$), its area $\mathscr{A}(f)$, the circumference $\mathscr{C}(f)$, the centroid $\mathscr{G}(f)$ and the normal $\vec{n}(f)$. We compute statistical characteristics over the building model facets, using specific families of functions $(S_p)_{p \in \mathscr{P}}$\footnote{$\mathscr{P}$ represents a parameter set. When  $\mathscr{P}=\emptyset$, we write $S$.}, like a histogram $S_{p}: l \mapsto histogram(l, p)$ or simply $S: l \mapsto \begin{bmatrix}
+For each facet $f \in \mathsf{F}$, we compute its degree (\textit{i.e.} number of vertices; $d(f) \triangleq \vert\{v : v\text{ is a vertex of }f\}\vert$), its area $\mathscr{A}(f)$, the circumference $\mathscr{C}(f)$, the centroid $\mathscr{G}(f)$ and the normal $\vec{n}(f)$. Statistical characteristics are then computed over building model facets using specific functions $S$, like a histogram $S^p_{hist}: l \mapsto histogram(l, p)$, where $p$ represent histogram parameters, or simply $S_{synth}: l \mapsto \begin{bmatrix}
 \max(l)& \min(l) & \bar{l} & \text{median}(l) & \sigma(l)
-\end{bmatrix}$ where $\bar{l}$ (resp. $\sigma(l)$) represents the mean (\textit{resp.} the standard deviation) over a tuple $l$ and $\mathscr{P}=\emptyset$.
+\end{bmatrix}$ where $\bar{l}$ (resp. $\sigma(l)$) represents the mean (\textit{resp.} the standard deviation) over a tuple $l$.
 
- For some well defined parameter $p \in \mathscr{P}$, each building $\mathsf{M}$ can be characterized by a geometric feature vector that accounts for its geometric characteristics:
+Each building $\mathsf{M}$ can consequently be characterized by a geometric feature vector that accounts for its geometric characteristics:
 
 \begin{equation}
 	\label{eq::geom_feat}
     v_{geometric}(\mathsf{M}) = \begin{bmatrix}
-    	S_p \Big(\big(d(f)\big)_{f \in \mathsf{F}}\Big)\\
-    	S_p \Big(\big(\mathscr{A}(f)\big)_{f \in \mathsf{F}}\Big)\\
-    	S_p \Big(\big(\mathscr{C}(f)\big)_{f \in \mathsf{F}}\Big)\\
-    	S_p \Big(\big( \vert\vert \mathscr{G}(f) - \mathscr{G}(f) \vert\vert \big)_{(f,g) \in \mathsf{E}}\Big)\\
-    	S_p \Big(\big( acos(\vec{n}(f), \vec{n}(g)) \big)_{(f,g) \in \mathsf{E}}\Big)
+    	S \Big(\big(d(f)\big)_{f \in \mathsf{F}}\Big)\\
+    	S \Big(\big(\mathscr{A}(f)\big)_{f \in \mathsf{F}}\Big)\\
+    	S \Big(\big(\mathscr{C}(f)\big)_{f \in \mathsf{F}}\Big)\\
+    	S \Big(\big( \vert\vert \mathscr{G}(f) - \mathscr{G}(f) \vert\vert \big)_{(f,g) \in \mathsf{E}}\Big)\\
+    	S\Big(\big( \arccos(\vec{n}(f), \vec{n}(g)) \big)_{(f,g) \in \mathsf{E}}\Big)
     \end{bmatrix}
 \end{equation}
-This type of features loses most structural information. Taking account of these implicates graph comparisons which are not genuinely simple tasks to achieve. Since the objective is to build a baseline, this approach is left for later.
+This type of features looses most structural information. Taking these into account would implicate graph comparisons which are not genuinely simple tasks to achieve. Since the objective is to build a baseline, this approach has not been considered for the moment.
 \subsubsection{Altimetric features.}
-For this modality, the depth information is provided as a float encoded image $dsm \in \mathbb{R}^l \otimes \mathbb{R}^w$ where $l$ and $w$ represent, respectively, the length and width of a patch containing the building projection. The model height can be inferred in function of the longitude $x$ and latitude $y$ coordinates: $h(x, y)$. The later function is quantized in the same matrix format\footnote{both top left pixels of $dsm$ and $alt$ coincide geographically and both images have the same pixel size.} as $dsm$: $alt \in \mathbb{R}^l \otimes \mathbb{R}^w$.The subtraction of these two images reveals a discrepancy map that can be exploited for the prediction (\textit{c.f.} Figure~\ref{fig::pipeline}.c). A baseline approach is proposed relying on pixel values statistics computed using previously defined functions $(S_p)_{p \in \mathscr{P}}$.
+For this modality, the depth information is provided as a $2D$ height grid image $dsm$. The model altimetry can be inferred from it facets plane equations. It is then rasterized into the image $alt$ at the same spatial resolution of the $dsm$. Their difference reveals a discrepancy map that can be exploited for the prediction (\textit{c.f.} Figure~\ref{fig::pipeline}.c). A baseline approach is proposed relying on pixel values statistics computed using previously defined functions $S$.
 \begin{equation}
 	\label{eq::alti_feat}
-    v_{altimetric}(\mathsf{M}) = S_p\big( \mathrm{vec}(dsm - alt) \big)
+    v_{altimetric}(\mathsf{M}) = S\big( \mathrm{vec}(dsm - alt) \big)
 \end{equation}
 Equation~\ref{eq::alti_feat} summarizes how building altimetric features are computed. The $\mathrm{vec}$ operator represents the matrix vectorization operator. As with geometric attributes, this map loses structure representing models.
+
 \subsubsection{Radiometric features.}
-Building edges correspond to sharp discontinuities in images. The idea is to compare these edges to local gradients in order to look for inconsistencies. In an ideal setting, gradients computed at pixels $g$ of an image\footnote{containing the building} $I \in \mathbb{R}^l \otimes \mathbb{R}^w$ that intersect any segment $s$ from the building projection (\ref{fig::radio}) will almost be collinear with its normal. We qualify, using a histogram $S_p$ for a certain fixed parameter $p \in \mathscr{P}$, the distribution of the scalar product of the normalized gradient with the normal all along a segment:
+Building edges correspond to sharp discontinuities in images. The idea is to compare these edges to local gradients in order to look for inconsistencies. In an ideal setting, in an image $I$, gradients computed at pixels $g$ that intersect any segment $s$ from the building projection (\ref{fig::radio}) will almost be collinear with its normal. We qualify, using the same statistical functions $S$, the distribution of the scalar product of the normalized gradient with the normal all along a segment:
 \begin{equation}
 	\label{eq::corr_seg}
-    \mathsf{D}_p(s, I) \triangleq S_p \bigg( \Big(\frac{\nabla I(g) \cdot \vec{n}(s)}{\Vert \nabla I(g)\Vert})_{g \in I \textrm{ and } g \cap s} \Big)\bigg)
+    \mathsf{D}_S(s, I) \triangleq S \bigg( \Big(\frac{\nabla I(g) \cdot \vec{n}(s)}{\Vert \nabla I(g)\Vert})_{g \in I \textrm{ and } g \cap s} \Big)\bigg)
 \end{equation}
-Once the distribution is computed over a segment, it is compiled over all facet edges to define the distribution over projected facets. In the case of histograms, it is equivalent to summing out the previous vectors $\mathsf{D}_p(s, I)$ over segments $s$ forming the polygon projection $q(f)$ of the facet $f$. In order to take into account the variability of segment dimensions, this sum can be weighted by segment lengths.
+Once the distribution is computed over a segment, it is compiled over all facet edges to define the distribution over projected facets. In the case of histograms $S_{hist}^p$ with the same parameters (and thus the same bins), it is equivalent to summing out the previous vectors $\mathsf{D}_p(s, I) \triangleq \mathsf{D}_{S_{hist}^p}(s, I) $ over segments $s$ forming the polygon projection $q(f)$ of the facet $f$ on the same plane as the image $I$. In order to take into account the variability of segment dimensions, this sum is weighted by segment lengths.
 \begin{equation}
 	\label{eq::corr_fac}
-	D_p(f, I) \triangleq \sum_{s \in q(f)} \Vert s \Vert \cdot \mathsf{D}_p(s, I)
+	D_p(f, I) \triangleq \sum_{s \in q(f)} \Vert s \Vert \cdot \mathsf{D}^p(s, I)
 \end{equation}
 
-The same reduction can be done over all facets of a building, resulting in equation ~\ref{eq::corr_bul}. Once again, the structure of the model is lost when simply averaging over all segments.
+The same reduction can be done over all facets of a building $\mathsf{M}$, resulting in equation ~\ref{eq::corr_bul}. The weights are added in order to take into account the geometry as well as the radiometry. Once again, the structure of the model is lost when simply summing over all segments.
 \begin{equation}
 	\label{eq::corr_bul}
 	v_{radiometric}(\mathsf{M}) = D_p(\mathsf{M}, I) \triangleq \sum_{f \in \mathsf{F}} \mathscr{A}(q(f)) \cdot \mathsf{D}_p(f, I)
@@ -278,7 +278,7 @@ The same reduction can be done over all facets of a building, resulting in equat
     	\floatbox{figure}{
             \begin{subfloatrow}[2]
                 \ffigbox[\FBwidth]{\caption{\tiny The building projection compared to the orthoimage.}\label{fig::radio}}{\includegraphics[width=.33\textwidth]{images/radio_vector}}
-                \ffigbox[\FBwidth]{\caption{\tiny The green squares represent intersecting pixels with the red segment. The gradient in purple is compared to the segment normal in black.}\label{fig::seg_inter}}{\includestandalone[mode=buildnew, width=.33\textwidth]{radiometric_features}}
+                \ffigbox[\FBwidth]{\caption{\tiny The green squares represent intersecting pixels with the red segment. The gradient vector in purple is compared to the segment normal in black.}\label{fig::seg_inter}}{\includestandalone[mode=buildnew, width=.33\textwidth]{radiometric_features}}
             \end{subfloatrow}
         }{
         	\caption{Radiometric features illustration.} \label{fig::radiometric}
@@ -286,12 +286,91 @@ The same reduction can be done over all facets of a building, resulting in equat
 	\end{center}
 \end{figure}
 
-\subsection{Classifiers}
+\subsection{Classification procedure}
 
+When training over the obtained features, two sources of flexibility are to be taken into account: the parametric nature of the taxonomy and the feature vector modularity. The first means that ground truth classes or labels to predict are not fixed but depend on the specified parameters. The second means that the classifier model must adapt well to different input vectors types and sizes. Each is addressed as explained herein.
 
+\subsubsection{Taxonomy parametrization.}
+The three identified parameters determines the set of labels to work with. Depending on the \textbf{target \textit{finesse}}, at the first level $1$, it is a binary classification problem: Valid or Error. At the next $\textit{finesse}=2$, the other parameters intervene. The \textbf{\acrshort{acr::elod}}, can take two values, in the aerial reconstruction case, $\acrshort{acr::lod}1$ or $\acrshort{acr::lod}2$. If fixed at $\acrshort{acr::lod}1$, it is a binary classification problem: Valid or Building error. In the $\acrshort{acr::lod}2$ case, and if the \textbf{exclusivity} is on, then it is a multi-class problem: Valid, Building error or Facet errors, while, if set off, it becomes a multi-label one: Valid, Building error and Facet errors. At the last $\textit{finesse}=3$ level, if the \textbf{exclusivity} is on, it is a it is a $2$-stage classification problem. In the first stage, a multi-class, or simply binary in case $\acrshort{acr::elod} = \acrshort{acr::lod}1$, problem, like in the previous semantic degree, predicts the error family, after which a second multi-label problem decides between the predicted error family children. In the case where the \textbf{exclusivity} is off, it is a $1$-stage multi-label problem that guesses the existence of each atomic error corresponding to the chosen \acrshort{acr::elod}. Table~\ref{tab::problems} summarizes these cases.
+
+\begin{table}
+	\begin{center}
+		\begin{tabular}{c c c x{8cm}}
+			\toprule
+            \textbf{\textit{finesse}} & \textbf{\acrshort{acr::elod}} & \textbf{exclusivity} & \textbf{Classification output}\\
+            \midrule
+            \scriptsize
+            $1$ & -- & -- & Binary(Valid, Erroneous)\\
+            $2$ & $\acrshort{acr::lod}1$ & -- & Binary(Valid, Building error)\\
+            $2$ & $\acrshort{acr::lod}2$ & on & MultiClass(Valid, Building error, Facet error)\\
+            $2$ & $\acrshort{acr::lod}2$ & off & MultiLabel(Valid, Building error, Facet error)\\
+            $3$ & $\acrshort{acr::lod}1$ & on & MultiLabel(children(Binary(Valid, Building error)))\\
+            $3$ & $\acrshort{acr::lod}2$ & on & MultiLabel(children(MultiClass(Valid, Building error, Facet error)))\\
+            $3$ & $\acrshort{acr::lod}1$ & off & MultiLabel(children(Building error))\\
+            $3$ & $\acrshort{acr::lod}2$ & off & MultiLabel(children(Building error)$\cup$ children(Facet error))\\
+            \bottomrule
+		\end{tabular}
+        \caption{\label{tab::problems} All possible classification problem types summary. $children(\cdot)$ gives the children in this sense of the taxonomy tree (Figure~\ref{fig::taxonomy}).}
+	\end{center}
+\end{table}
+
+A multi-class classification problem decides, for one label, which is the most probable value. The multi-label problem decides, for multiple labels, the most probable state: present ($+1$) or absent ($-1$). In the multi-stage setting, one decides at each level the most probable class or labels which impact the next stages of prediction. Errors are easily propagated in the last case. That is why, the rest of the study is not interested in this case. Since it focuses on semantic evaluation, the first \textit{finesse} degree is not experimented. Furthermore, it can be inferred from higher levels of \textit{finesse}.
+
+\subsubsection{Features modularity.} The highly modular nature of proposed features and the high number of parameters to study restricts the choice of classifiers. Optimizing model features over a multiple dimension parameter space can be very costly. Random forest classifier~\cite{breiman2001random} are a good choice in this setting. Relying on their ensemblist nature, a high number of trees --- from \SIrange{800}{1000}{elements} --- is necessary to cover most of the feature space and a weak tree depth ($4$) to help avoiding overfitting during training. Another reason for the random forest choice, is its capacity to take into account multiple feature types and dynamics. It adapts also to any classification paradigm: multi-class or multi-label. In the later case, a one-vs-all approach is adopted in addition so as to address each label differently.
 \section{Experiments}
+
+Experiments were conducted to test the described baseline methodology using the previously established taxonomy.
 \subsection{Data}
+
+The used dataset results from an urban reconstruction algorithm over Elancourt ($78$, France). The studied scene spans an area of around \SI{15}{\km\squared}. It contains residential districts with mostly bi-level buildings, industrial Manhattan world like area, a stadium and administrative buildings as schools. $1501$ buildings that were modeled using cadaster footprints~\cite{Durupt2006} are evaluated. The algorithm simulates possible roof structures with constraints on facet dimensions from \SI{0.06}{\m} spatial resolution \acrshort{acr::dsm}. The best roof structure is selected after scoring the extrapolated roofs. Orthogonal building fa\c{c}ades connect the best roof to the terrain. These $2.5D$ models have a $\acrshort{acr::lod}2$ level. They were annotated using the atomic errors list provided by our taxonomy. Table~\ref{tab::statistics} reports these errors statistics over the annotated dataset.
+
+\begin{table}
+                    \scriptsize
+                    \begin{center}
+                        \begin{tabular}{|x{1.8cm} | x{1.8cm} | x{3cm} | x{2.8cm} | x{2.5cm}|}
+                            \hline
+                            \multicolumn{1}{|c|}{\textbf{Error Family}} & \textbf{Occurrence ratio} & \textbf{\emph{Atomic} error} & \textbf{Family conditional occurrence ratio} & \textbf{Absolute occurrence ratio} \\
+                            \hline
+                            Unqualifiable & $0.018$ & -- & -- & -- \\
+                            \hline
+                            \hline
+                            \multirow{4}{*}{Building Errors} & \multirow{4}{*}{$ $} & Over segmentation & $ $ & $ $\\
+                            \cline{3-5}
+                                &                   & Under segmentation & $ $ & $ $ \\
+                            \cline{3-5}
+                                &                   & Imprecise footprint & $ $ & $ $ \\
+                            \cline{3-5}
+                                &                   & Imprecise height & $ $ & $ $ \\
+                            \hline
+                            \hline
+                            \multirow{4}{*}{Facet Errors} & \multirow{4}{*}{$ $} & Over segmentation & $ $ & $ $ \\
+                            \cline{3-5}
+                                &                   & Under segmentation & $ $ & $ $ \\
+                            \cline{3-5}
+                                &                   & Imprecise segmentation & $ $ & $ $ \\
+                            \cline{3-5}
+                                &                   & Imprecise slope & $ $ & $ $ \\
+                            \hline
+                        \end{tabular}
+                        \caption{\label{tab::statistics} Ground truth statistics over the dataset.}
+                    \end{center}
+                \end{table}
 \subsection{Results}
+
+Based on the devised pipeline, four possibilities were tested: geometric features only, geometric and altimetric features, geometric and radiometric features and geometric, altimetric and radiometric features. Labels are extracted from a non \textbf{exclusive} and \textbf{\acrshort{acr::elod} $=\acrshort{acr::lod}2$} taxonomy. Both levels $\textit{finesse} = 2, 3$ are tested. The results are averaged over a $10$-fold cross validation. The overall accuracy is not interesting to report since some labels are aunder represented in the dataset.
+
+\begin{table}
+	\begin{center}
+		\begin{tabular}{x2cm x2cm x2cm x2cm x2cm x2cm x2cm x2cm}
+			\toprule
+            \multicolumn{2}{c}{Geometric feats.} & \multicolumn{2}{c}{Geometric and Altimetric feats} & \multicolumn{2}{c}{Geometric and Radiometric feats} & \multicolumn{2}{c}{All feats}\\
+            \midrule
+            recall & precision & recall & precision & recall & precision & recall & precision\\
+            \bottomrule
+		\end{tabular}
+	\end{center}
+\end{table}
+
 \subsection{Discussion}
 \section{Conclusion}
 
