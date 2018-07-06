@@ -119,7 +119,7 @@ To evaluate reconstructed input models, an error taxonomy is established. Depend
 
 The error taxonomy is \textbf{agnostic} towards reconstructed inputs\footnote{produced using any modeling method over all possible urban scenes} and \textbf{parameterizable}. This flexibility and independence means that, at runtime, the evaluation process does not involve heavy computing. Furthermore, it does not require any heavy reference data aside the annotated objects on which the classifier is trained.
 
-The quality assessment pipeline is also \textbf{modular}. Building models are represented by intrinsic geometric features extracted from the model facets graph. If available, the classifier can also be fed additional depth related features, based on the comparison of the model altimetry and the \acrshort{acr::dsm}, in case of aerial reconstruction, or, in general, any depth map comparison. Last but not least, radiometric information can be incorporated to the pipeline through aerial (orthorectified or oriented) or street view images.
+The quality assessment pipeline is also \textbf{modular}. Building models are represented by intrinsic geometric features extracted from the model facets graph. If available, the classifier can also be fed additional depth related features, based on the comparison of the model altimetry and the \acrshort{acr::dsm}, in case of aerial reconstruction, or, in general, any depth map comparison. Last but not least, image information can be incorporated to the pipeline through aerial (orthorectified or oriented) or street view images.
 
 \subsection{Error Taxonomy}
 In order to build a generic and flexible taxonomy, we rely on two criteria for error compilation: the building model \acrshort{acr::lod} and the error semantic level, named henceforth \textit{finesse} (\textit{c.f.} Figure~\ref{fig::taxonomy}). A natural integer is attributed to each \textit{finesse} level. Errors with maximal \textit{finesse} are called \textit{atomic} errors. Multiple \textit{atomic} errors can affect a building model. For instance, topological defects induce, almost always, geometrical ones. In practice, only independently coexisting \textit{atomic} defects are reported. The idea is to provide the most pertinent information to be able to correct a model. \textit{Atomic} errors can thus be correlated heuristically to independent actions that an operator or an algorithm needs to choose to correct building models.
@@ -254,7 +254,7 @@ For this modality, the depth information is provided as a $2D$ height grid $dsm$
 \end{equation}
 Equation~\ref{eq::alti_feat} summarizes how building altimetric features are computed. The $\mathrm{vec}$ operator represents the matrix vectorization operator. As with geometric attributes, this map loses structure representing models.
 
-\subsubsection{Radiometric features.}
+\subsubsection{Image features.}
 Building edges correspond to sharp discontinuities in images. The idea is to compare these edges to local gradients in order to look for inconsistencies. In an ideal setting, in an image $I$, gradients computed at pixels $g$ that intersect any segment $s$ from the building projection (\ref{fig::radio}) will almost be collinear with its normal. We qualify, using the same statistical functions $S$, the distribution of the scalar product of the normalized gradient with the normal all along a segment:
 \begin{equation}
 	\label{eq::corr_seg}
@@ -269,7 +269,7 @@ Once the distribution is computed over a segment, it is compiled over all facet 
 The same reduction can be done over all facets of a building $\mathsf{M}$, resulting in equation ~\ref{eq::corr_bul}. The weights are added in order to take into account the geometry as well as the radiometry. Once again, the structure of the model is lost when simply summing over all segments.
 \begin{equation}
 	\label{eq::corr_bul}
-	v_{radiometric}(\mathsf{M}) = D_p(\mathsf{M}, I) \triangleq \sum_{f \in \mathsf{F}} \mathscr{A}(q(f)) \cdot \mathsf{D}_p(f, I)
+	v_{image}(\mathsf{M}) = D_p(\mathsf{M}, I) \triangleq \sum_{f \in \mathsf{F}} \mathscr{A}(q(f)) \cdot \mathsf{D}_p(f, I)
 \end{equation}
 
 
@@ -278,10 +278,10 @@ The same reduction can be done over all facets of a building $\mathsf{M}$, resul
     	\floatbox{figure}{
             \begin{subfloatrow}[2]
                 \ffigbox[\FBwidth]{\caption{\tiny The building projection compared to the orthoimage.}\label{fig::radio}}{\includegraphics[width=.33\textwidth]{images/radio_vector}}
-                \ffigbox[\FBwidth]{\caption{\tiny The green squares represent intersecting pixels with the red segment. The gradient vector in purple is compared to the segment normal in black.}\label{fig::seg_inter}}{\includestandalone[mode=buildnew, width=.33\textwidth]{radiometric_features}}
+                \ffigbox[\FBwidth]{\caption{\tiny The green squares represent intersecting pixels with the red segment. The gradient vector in purple is compared to the segment normal in black.}\label{fig::seg_inter}}{\includestandalone[mode=buildnew, width=.33\textwidth]{image_features}}
             \end{subfloatrow}
         }{
-        	\caption{Radiometric features illustration.} \label{fig::radiometric}
+        	\caption{Image features illustration.} \label{fig::image}
         }
 	\end{center}
 \end{figure}
@@ -357,7 +357,7 @@ The used dataset results from an urban reconstruction algorithm over Elancourt (
                 \end{table}
 \subsection{Results}
 
-Based on the devised pipeline, four possibilities were tested: geometric features only, geometric and altimetric features, geometric and radiometric features and geometric, altimetric and radiometric features. Labels are extracted from a non \textbf{exclusive} and \textbf{\acrshort{acr::elod} $=\acrshort{acr::lod}2$} taxonomy. Both levels $\textit{finesse} = 2, 3$ are tested. The results are averaged over a $10$-fold cross validation tests. The overall accuracy is not interesting to report since some labels are aunder represented in the dataset.
+Based on the devised pipeline, four possibilities were tested: geometric features only, geometric and altimetric features, geometric and image features and geometric, altimetric and image features. Labels are extracted from a non \textbf{exclusive} and \textbf{\acrshort{acr::elod} $=\acrshort{acr::lod}2$} taxonomy. Both levels $\textit{finesse} = 2, 3$ are tested. The results are averaged over a $10$-fold cross validation tests. The overall accuracy is not interesting to report since some labels are aunder represented in the dataset.
 
 \begin{table}
 	\scriptsize
