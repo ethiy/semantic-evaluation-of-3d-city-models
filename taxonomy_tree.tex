@@ -2,7 +2,7 @@
 \usepackage[T1]{fontenc}
 
 \usepackage{tikz}
-\usetikzlibrary{trees}
+\usetikzlibrary{trees, decorations.pathreplacing}
 
 \begin{document}
 
@@ -75,6 +75,11 @@
         \draw[dashed, purple, ultra thick] (facet_errors |- b_under.south) + (-1.5,-1) -- (families_max);
         \draw[dashed, blue, ultra thick] (b_under.south) + (-1,-1) -- (atomic_max);
         
-        \draw[dash dot, ultra thick] (lod_max)  -- (lod_min) node[below, align=left, xshift=-1cm] {\scriptsize LoD0 $\cup$ LoD1} node [above, xshift=-.5cm] {\scriptsize LoD2}; 
+        \draw[dash dot, ultra thick] (lod_max)  -- (lod_min) node[below, align=left, xshift=-1cm] {\scriptsize LoD0 $\cup$ LoD1} node [above, xshift=-.5cm] {\scriptsize LoD2};
+        
+        \path (facet_errors |- b_under.south) + (-1.5,-1.25) node (temp) {};
+        \path (lod_min |- b_under.south) + (-1.5,-1.25) node (last) {};
+        \draw[decorate, decoration={brace, amplitude=5pt}] (b_under.south) + (-1,-1.25) -- (temp) node[midway, yshift=-2em, align=center]{Family errors:\\possible hierarchy};
+        \draw[decorate, decoration={brace, amplitude=5pt,mirror}] (b_under.south) + (-1,-1.25) -- (last) node[midway, yshift=-2em, align=center]{\textit{Atomic} errors:\\no hierarchy};
     \end{tikzpicture}
 \end{document}

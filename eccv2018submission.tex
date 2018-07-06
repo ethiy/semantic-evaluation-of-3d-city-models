@@ -122,10 +122,10 @@ The error taxonomy is \textbf{agnostic} towards reconstructed inputs\footnote{pr
 The quality assessment pipeline is also \textbf{modular}. Building models are represented by intrinsic geometric features extracted from the model facets graph. If available, the classifier can also be fed additional depth related features, based on the comparison of the model altimetry and the \acrshort{acr::dsm}, in case of aerial reconstruction, or, in general, any depth map comparison. Last but not least, radiometric information can be incorporated to the pipeline through aerial (orthorectified or oriented) or street view images.
 
 \subsection{Error Taxonomy}
-In order to build a generic and flexible taxonomy, we rely on two criteria for error compilation: the building model \acrshort{acr::lod} and the error semantic level, named henceforth \textit{finesse} (\textit{c.f.} Figure~\ref{fig::taxonomy}). Each \textit{finesse} is associated to a natural integer starting from $0$. Errors with maximal \textit{finesse} are called \textit{atomic} errors. These last defects could be correlated, heuristically, to unit actions from an operator, or an algorithm, needed to correct the input model.
+In order to build a generic and flexible taxonomy, we rely on two criteria for error compilation: the building model \acrshort{acr::lod} and the error semantic level, named henceforth \textit{finesse} (\textit{c.f.} Figure~\ref{fig::taxonomy}). A natural integer is attributed to each \textit{finesse} level. Errors with maximal \textit{finesse} are called \textit{atomic} errors. Multiple \textit{atomic} errors can affect a building model. For instance, topological defects induce, almost always, geometrical ones. In practice, only independently coexisting \textit{atomic} defects are reported. The idea is to provide the most pertinent information to be able to correct a model. \textit{Atomic} errors can thus be correlated heuristically to independent actions that an operator or an algorithm needs to choose to correct building models.
 
 \subsubsection{A general layout.}
-The main idea of hierarchization is to enable modularity in the taxonomy, and thus achieve a strong flexibility towards input urban scenes and desired error precision. A general layout is drawn herein before filling in the detailed error descriptions.
+The main idea of error hierarchization is to enable modularity in the taxonomy, and thus achieve a strong flexibility towards input urban scenes and desired error precision. A general layout is drawn herein before filling in the detailed error descriptions.
 
 At a first level, model qualifiability is studied. In fact, aside from formatting issues or geometric inconsistencies~\cite{ledoux2018val3dity}, other reasons make building models unqualifiable. For instance, buildings can be occluded by vegetation. In general, input models can be impaired by some pathological cases that are outside our evaluation framework. In consequence, \textit{Qualifiable} models will be distinguished from \textit{Unqualifiable} buildings. This first qualification degree corresponds to the $\textit{finesse} = 0$.
 
@@ -133,7 +133,7 @@ At the next \textit{finesse} level ($\textit{finesse} = 1$), a qualifiable build
 
 Model errors are to be grouped into three families depending on the underlying \acrshort{acr::lod}. The first family of errors (``\textit{Building Errors}'') affects the building in its entirety. It corresponds to an accuracy evaluation at $\acrshort{acr::lod}0\text{ } \cup \text{ }\acrshort{acr::lod}1$. At the next $\acrshort{acr::lod}2$, the family error assembles defects that can damage fa\c{c}ade or roof fidelity. The last error family, \textit{i.e.} ``\textit{Superstructure Errors}'', describes errors that involve superstructures modeled at $\acrshort{acr::lod}3$.
 
-Each family contains atomic errors of maximal $\textit{finesse} = 3$. These errors are semantically independent, although they can co-occur in the same building model, in the same error family as much as across different ones. They represent particular topological or geometric defects. Topological errors translate structurally inaccurate modeling, while geometric ones pick up geometric positioning inaccuracies.
+Each family contains \textit{atomic} errors of maximal $\textit{finesse} = 3$. These errors are semantically independent, although they can co-occur in the same building model, in the same error family as much as across different ones. They represent particular topological or geometric defects. Topological errors translate inaccurate structure modeling, while geometric ones raise metric positioning inaccuracies.
 
 A scoring system can be attributed to this taxonomy. Each \textit{atomic} error will be attributed a score based on the quality assessment objective. This score, from \SIrange{0}{10}{}, describes the confidence level in the defect presence. At $10$ the error must be certainly detected, compared to $0$ where the error must surely not exist. Errors of lower \textit{finesse} inherit their score from their children. The presence of only one child error implicates the presence of its parent, at least, at the same level of confidence. Hence, the parent error category is attributed the maximum score of its children scores.
 
@@ -141,7 +141,7 @@ At evaluation time, three parameters play a role in determining which error labe
 \begin{itemize}
     \item The first is the \textbf{\acrfull{acr::elod}}. Every reconstruction method targets a certain set of \glspl{acr::lod}. They can then be evaluated at multiple levels. In consequence, when assessing a reconstruction, a \acrshort{acr::lod} must be specified. At a predefined \acrshort{acr::elod}, all error families involving higher order details will be ignored.
     \item Depending on the final use of qualification, a \textbf{finesse} level might be preferred. This second evaluation parameter specifies the appropriate semantic level at which errors will be reported.
-    \item The last one is error \textbf{exclusivity}. It is based on family error hierarchization. If errors of a certain \acrshort{acr::lod} are detected, the more detailed ones are considered meaningless and thus are not reported.
+    \item The last one is error \textbf{exclusivity}. It is based on family error hierarchization. If errors of a certain \acrshort{acr::lod} family are detected, the ones with higher \acrshort{acr::lod} orders are considered meaningless and thus are not reported.
 \end{itemize}
 
 \subsubsection{The aerial reconstruction case.}
@@ -151,9 +151,9 @@ At evaluation time, three parameters play a role in determining which error labe
             \caption{\label{fig::taxonomy} The proposed taxonomy illustration. }
         \end{center}
     \end{figure}
-This study is, henceforth, narrowed to the aerial reconstruction case. The objective is to reconstruct large urban scenes using aerial oriented images and, if available, \acrshort{acr::lidar} point clouds. We will use these data  to confront with the modeled buildings.
+This study is, henceforth, narrowed to the aerial reconstruction case. The objective is to reconstruct large urban scenes using aerial oriented images or, if available, \acrshort{acr::lidar} point clouds. We will use these data  to confront with the modeled buildings.
 
-In the present case, $2.5$D buildings are evaluated. These \textit{atomic} errors are proposed:
+In the present case, $2.5$D buildings are evaluated. The next \textit{atomic} errors are proposed:
 	\begin{itemize}
 		\item \textbf{Building errors} family (\textit{c.f.} Figure~\ref{fig::bul_err}):
         \begin{itemize}
@@ -245,9 +245,9 @@ Each building $\mathsf{M}$ can consequently be characterized by a geometric feat
     	S\Big(\big( \arccos(\vec{n}(f), \vec{n}(g)) \big)_{(f,g) \in \mathsf{E}}\Big)
     \end{bmatrix}
 \end{equation}
-This type of features looses most structural information. Taking these into account would implicate graph comparisons which are not genuinely simple tasks to achieve. Since the objective is to build a baseline, this approach has not been considered for the moment.
+This type of features expresses only a small part of structural information. Taking this type of information into account would implicate graph comparisons which are not genuinely simple tasks to achieve. Since the objective is to build a baseline, this approach has not been considered for the moment.
 \subsubsection{Altimetric features.}
-For this modality, the depth information is provided as a $2D$ height grid image $dsm$. The model altimetry can be inferred from it facets plane equations. It is then rasterized into the image $alt$ at the same spatial resolution of the $dsm$. Their difference reveals a discrepancy map that can be exploited for the prediction (\textit{c.f.} Figure~\ref{fig::pipeline}.c). A baseline approach is proposed relying on pixel values statistics computed using previously defined functions $S$.
+For this modality, the depth information is provided as a $2D$ height grid $dsm$. It must have been produced at the same time of the $3D$ reconstruction so as to avoid time dynamics. The model altimetry can be inferred from its facets plane equations. It is then rasterized into the image $alt$ at the spatial resolution of the $dsm$. Their difference reveals a discrepancy map that can be exploited for the prediction (\textit{c.f.} Figure~\ref{fig::pipeline}.c). A baseline approach is proposed relying on pixel values statistics computed using previously defined functions $S$.
 \begin{equation}
 	\label{eq::alti_feat}
     v_{altimetric}(\mathsf{M}) = S\big( \mathrm{vec}(dsm - alt) \big)
@@ -368,9 +368,9 @@ Based on the devised pipeline, four possibilities were tested: geometric feature
             \cline{2-9}
             &\textbf{Recall} & \textbf{Prec.} & \textbf{Recall} & \textbf{Prec.} & \textbf{Recall} & \textbf{Prec.} & \textbf{Recall} & \textbf{Prec.}\\
             \hline
-            Building errors & $0.9976$ & $0.8416$ & $0.9976$ & $0.8411$& $0.9992$ & $0.8384$ & $0.$ & $0.$ \\
+            Building errors & $0.9976$ & \textbf{0.8416} & $0.9976$ & $0.8411$& $0.9992$ & $0.8384$ & \textbf{1} & $0.8385$ \\
             \hline
-            Facet errors & $0.9081$ & $0.9802$ & $0.9108$ & $0.9841$& $0.9044$ & $0.9762$ & $0.$ & $0.$ \\
+            Facet errors & $0.9081$ & $0.9802$ & \textbf{0.9108} & \textbf{0.9841} & $0.9044$ & $0.9762$ & $0.9053$ & $0.9782$ \\
             \hline
 		\end{tabular}
 	\end{center}
@@ -386,22 +386,22 @@ Based on the devised pipeline, four possibilities were tested: geometric feature
             \cline{2-9}
             &\textbf{Recall} & \textbf{Prec.} & \textbf{Recall} & \textbf{Prec.} & \textbf{Recall} & \textbf{Prec.} & \textbf{Recall} & \textbf{Prec.}\\
             \hline
-            Bul. over seg & $0.9434$ & $0.7709$ &$0.9336$ & $0.7766$ &$0.9238$ & $0.7704$ &$0.$ & $0.$ \\
+            Bul. over seg & \textbf{0.9434} & $0.7709$ &$0.9336$ & \textbf{0.7766} &$0.9238$ & $0.7704$ &$0.9219$ & $0.7669$ \\
             \hline
-            Bul. under seg & $0.3438395$ & $0.764331$ &$0.3151863$ & $0.7857143$ &$0.4297994$ & $0.76530612$ &$0.$ & $0.$ \\
+            Bul. under seg & $0.3438$ & $0.7643$ &$0.3152$ & \textbf{0.7857} & \textbf{0.4298} & $0.7653$ &$0.4155$ & $0.7796$ \\
             \hline
-            Inexact footprint & $0.223404$ & $0.688525$ &$0.223403$ & $0.67741194$ &$0.1808511$ & $0.6415094$ &$0.$ & $0.$ \\
+            Inexact footprint & \textbf{0.2234} & \textbf{0.6885} & $0.2234$ & $0.6774$ &$0.1809$ & $0.6415$ &$0.1862$ & $0.6481$ \\
             \hline
-            Imprecise height & $0$ & -- & $0$ & -- & $0.0$ & -- &$0.$ & $0.$ \\
+            Imprecise height & $0$ & -- & $0$ & -- & $0$ & -- &$0.$ & $0.$ \\
             \hline
             \hline
-            Fac. over seg & $0.9877$ & $0.9877$ &$0.9887$ & $0.9867$ &$0.9867$ & $0.9847$ &$0.$ & $0.$ \\
+            Fac. over seg & $0.9877$ & \textbf{0.9877} & \textbf{0.9887} & $0.9867$ &$0.9867$ & $0.9847$ &$0.9867$ & $0.9837$ \\
             \hline
-            Fac. under seg & $0.0070$ & $0.5$ &$0.0070$ & $0.3334$ &$0.0070$ & $0.5$ &$0.$ & $0.$ \\
+            Fac. under seg & \textbf{0.0070} & \textbf{0.5} &$0.0070$ & $0.3334$ & \textbf{0.0070} & \textbf{0.5} & \textbf{0.0070} & \textbf{0.5} \\
             \hline
-            Fac. inexact seg & $0.0136$ & $0.6667$ &$0.0136$ & $0.5$ &$0.0136$ & $0.2857$ &$0.$ & $0.$ \\
+            Fac. inexact seg & \textbf{0.0136} & \textbf{0.6667} &$0.0136$ & $0.5$ &$0.0136$ & $0.2857$ &$0.0136$ & $0.4$ \\
             \hline
-            Imprecise slope & $0$ & -- & $0$ & -- & $0.$ & -- &$0.$ & $0.$ \\
+            Imprecise slope & $0$ & -- & $0$ & -- & $0$ & -- &$0$ & -- \\
             \hline
 		\end{tabular}
 	\end{center}
