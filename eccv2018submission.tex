@@ -331,25 +331,25 @@ The used dataset results from an urban reconstruction algorithm over Elancourt (
                             \hline
                             \multicolumn{1}{|c|}{\textbf{Error Family}} & \textbf{Occurrence ratio} & \textbf{\emph{Atomic} error} & \textbf{Family conditional occurrence ratio} & \textbf{Absolute occurrence ratio} \\
                             \hline
-                            Unqualifiable & $0.018$ & -- & -- & -- \\
+                            Unqualifiable & $0.017988$ & -- & -- & -- \\
                             \hline
                             \hline
-                            \multirow{4}{*}{Building Errors} & \multirow{4}{*}{$ $} & Over segmentation & $ $ & $ $\\
+                            \multirow{4}{*}{Building Errors} & \multirow{4}{*}{$0.823451$} & Over segmentation & $0.8284790$ & $0.6822119$\\
                             \cline{3-5}
-                                &                   & Under segmentation & $ $ & $ $ \\
+                                &                   & Under segmentation & $0.28236$ & $0.232512$ \\
                             \cline{3-5}
-                                &                   & Imprecise footprint & $ $ & $ $ \\
+                                &                   & Imprecise footprint & $0.1521036$ & $0.1252498$ \\
                             \cline{3-5}
-                                &                   & Imprecise height & $ $ & $ $ \\
+                                &                   & Imprecise height & $0.0056634$ & $0.0046636$ \\
                             \hline
                             \hline
-                            \multirow{4}{*}{Facet Errors} & \multirow{4}{*}{$ $} & Over segmentation & $ $ & $ $ \\
+                            \multirow{4}{*}{Facet Errors} & \multirow{4}{*}{$0.72485$} & Over segmentation & $0.8970588$ & $0.6502332$ \\
                             \cline{3-5}
-                                &                   & Under segmentation & $ $ & $ $ \\
+                                &                   & Under segmentation & $0.1314338$ & $0.0952698$ \\
                             \cline{3-5}
-                                &                   & Imprecise segmentation & $ $ & $ $ \\
+                                &                   & Imprecise segmentation & $0.1351103$ & $0.979345$ \\
                             \cline{3-5}
-                                &                   & Imprecise slope & $ $ & $ $ \\
+                                &                   & Imprecise slope & $0.0193015$ & $0.0139907$ \\
                             \hline
                         \end{tabular}
                         \caption{\label{tab::statistics} Ground truth statistics over the dataset.}
@@ -357,21 +357,55 @@ The used dataset results from an urban reconstruction algorithm over Elancourt (
                 \end{table}
 \subsection{Results}
 
-Based on the devised pipeline, four possibilities were tested: geometric features only, geometric and altimetric features, geometric and radiometric features and geometric, altimetric and radiometric features. Labels are extracted from a non \textbf{exclusive} and \textbf{\acrshort{acr::elod} $=\acrshort{acr::lod}2$} taxonomy. Both levels $\textit{finesse} = 2, 3$ are tested. The results are averaged over a $10$-fold cross validation. The overall accuracy is not interesting to report since some labels are aunder represented in the dataset.
+Based on the devised pipeline, four possibilities were tested: geometric features only, geometric and altimetric features, geometric and radiometric features and geometric, altimetric and radiometric features. Labels are extracted from a non \textbf{exclusive} and \textbf{\acrshort{acr::elod} $=\acrshort{acr::lod}2$} taxonomy. Both levels $\textit{finesse} = 2, 3$ are tested. The results are averaged over a $10$-fold cross validation tests. The overall accuracy is not interesting to report since some labels are aunder represented in the dataset.
 
 \begin{table}
+	\scriptsize
 	\begin{center}
-        \begin{tabular}{x{1cm} x{1cm} x{1cm} x{1cm} x{1cm} x{1cm} x{1cm} x{1cm} x{1cm}}
-			\toprule
-            &\multicolumn{2}{c}{\textbf{Geometric feats.}} & \multicolumn{2}{c}{\textbf{Geometric and Altimetric feats.}} & \multicolumn{2}{c}{\textbf{Geometric and Radiometric feats.}} & \multicolumn{2}{c}{\textbf{All feats.}}\\
-            \midrule
-            &\textbf{Recall} & \textbf{Precision} & \textbf{Recall} & \textbf{Precision} & \textbf{Recall} & \textbf{Precision} & \textbf{Recall} & \textbf{Precision}\\
-            \midrule
-            \midrule
-            Building errors & & & & & & & \\
-            \bottomrule
+        \begin{tabular}{|x{1.4cm} | x{1.2cm} x{1.2cm} | x{1.2cm} x{1.2cm} | x{1.2cm} x{1.2cm} | x{1.2cm} x{1.2cm}|}
+			\hline
+            &\multicolumn{2}{x{2.4cm}|}{\textbf{Geom. feats.}} & \multicolumn{2}{x{2.4cm}|}{\textbf{Geom. \& Alti. feats.}} & \multicolumn{2}{x{2.4cm}|}{\textbf{Geom. \& Radio. feats.}} & \multicolumn{2}{|x{2.4cm}|}{\textbf{All feats.}}\\
+            \cline{2-9}
+            &\textbf{Recall} & \textbf{Prec.} & \textbf{Recall} & \textbf{Prec.} & \textbf{Recall} & \textbf{Prec.} & \textbf{Recall} & \textbf{Prec.}\\
+            \hline
+            Building errors & $0.9975728$ & $0.841638$ & $0.9975728$ & $0.8410641$& $0.99919094$ & $0.83842498$ & $0.$ & $0.$ \\
+            \hline
+            Facet errors & $0.908088$ & $0.9801587$ & $0.9108456$ & $0.9841112$& $0.90441177$ & $0.97619048$ & $0.$ & $0.$ \\
+            \hline
 		\end{tabular}
 	\end{center}
+    \caption{\label{tab::f2_res}Results reported for a training at $\textit{finesse}=2$.}
+\end{table}
+
+\begin{table}
+	\scriptsize
+	\begin{center}
+        \begin{tabular}{|x{1.4cm} | x{1.2cm} x{1.2cm} | x{1.2cm} x{1.2cm} | x{1.2cm} x{1.2cm} | x{1.2cm} x{1.2cm}|}
+			\hline
+            &\multicolumn{2}{x{2.4cm}|}{\textbf{Geom. feats.}} & \multicolumn{2}{x{2.4cm}|}{\textbf{Geom. \& Alti. feats.}} & \multicolumn{2}{x{2.4cm}|}{\textbf{Geom. \& Radio. feats.}} & \multicolumn{2}{|x{2.4cm}|}{\textbf{All feats.}}\\
+            \cline{2-9}
+            &\textbf{Recall} & \textbf{Prec.} & \textbf{Recall} & \textbf{Prec.} & \textbf{Recall} & \textbf{Prec.} & \textbf{Recall} & \textbf{Prec.}\\
+            \hline
+            Bul. over seg & $0.943359$ & $0.770949$ &$0.9335938$ & $0.7766044$ &$0.9238281$ & $0.7703583$ &$0.$ & $0.$ \\
+            \hline
+            Bul. under seg & $0.3438395$ & $0.764331$ &$0.3151863$ & $0.7857143$ &$0.4297994$ & $0.76530612$ &$0.$ & $0.$ \\
+            \hline
+            Inexact footprint & $0.223404$ & $0.688525$ &$0.223403$ & $0.67741194$ &$0.1808511$ & $0.6415094$ &$0.$ & $0.$ \\
+            \hline
+            Imprecise height & $0.0$ & -- & $0.0$ & -- & $0.0$ & -- &$0.$ & $0.$ \\
+            \hline
+            \hline
+            Fac. over seg & $0.987705$ & $0.987705$ &$0.9887295$ & $0.9867076$ &$0.9866803$ & $0.9846626$ &$0.$ & $0.$ \\
+            \hline
+            Fac. under seg & $0.006993$ & $0.500000$ &$0.006993$ & $0.333334$ &$0.006993$ & $0.50000$ &$0.$ & $0.$ \\
+            \hline
+            Fac. inexact seg & $0.013605$ & $0.66666667$ &$0.013605$ & $0.5$ &$0.013605$ & $0.2857143$ &$0.$ & $0.$ \\
+            \hline
+            Imprecise slope & $0.0$ & -- & $0.0$ & -- & $0.$ & -- &$0.$ & $0.$ \\
+            \hline
+		\end{tabular}
+	\end{center}
+    \caption{\label{tab::f3_res}Results reported for a training at $\textit{finesse}=3$.}
 \end{table}
 
 \subsection{Discussion}
