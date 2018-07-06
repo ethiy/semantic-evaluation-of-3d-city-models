@@ -255,21 +255,21 @@ For this modality, the depth information is provided as a $2D$ height grid $dsm$
 Equation~\ref{eq::alti_feat} summarizes how building altimetric features are computed. The $\mathrm{vec}$ operator represents the matrix vectorization operator. As with geometric attributes, this map loses structure representing models.
 
 \subsubsection{Image features.}
-Building edges correspond to sharp discontinuities in images. The idea is to compare these edges to local gradients in order to look for inconsistencies. In an ideal setting, in an image $I$, gradients computed at pixels $g$ that intersect any segment $s$ from the building projection (\ref{fig::radio}) will almost be collinear with its normal. We qualify, using the same statistical functions $S$, the distribution of the scalar product of the normalized gradient with the normal all along a segment:
+Building edges correspond to sharp discontinuities in images. The idea is to compare these edges to local gradients in order to look for inconsistencies. In an ideal setting, in an image $I$, gradients computed at pixels $g$ that intersect any segment $s$ from the building projection (\ref{fig::radio}) will almost be collinear with its normal. In consequece, we qualify, using the same statistical functions $S$, the distribution of the the normalized gradient scalar product with the normal all along a segment:
 \begin{equation}
 	\label{eq::corr_seg}
     \mathsf{D}_S(s, I) \triangleq S \bigg( \Big(\frac{\nabla I(g) \cdot \vec{n}(s)}{\Vert \nabla I(g)\Vert})_{g \in I \textrm{ and } g \cap s} \Big)\bigg)
 \end{equation}
-Once the distribution is computed over a segment, it is compiled over all facet edges to define the distribution over projected facets. In the case of histograms $S_{hist}^p$ with the same parameters (and thus the same bins), it is equivalent to summing out the previous vectors $\mathsf{D}_p(s, I) \triangleq \mathsf{D}_{S_{hist}^p}(s, I) $ over segments $s$ forming the polygon projection $q(f)$ of the facet $f$ on the same plane as the image $I$. In order to take into account the variability of segment dimensions, this sum is weighted by segment lengths.
+Once the distribution is computed over a segment, it is compiled over all facet edges to define the distribution over projected facets. In the case of histograms $S_{hist}^p$ with the same parameters (and thus the same bins), it is equivalent to summing out the previous vectors $\mathsf{D}_{S_{hist}^p}(s, I)$ over segments $s$ forming the polygon projection $q(f)$ of the facet $f$ on as the image $I$. In order to take into account the variability of segment dimensions, this sum is weighted by segment lengths.
 \begin{equation}
 	\label{eq::corr_fac}
-	D_p(f, I) \triangleq \sum_{s \in q(f)} \Vert s \Vert \cdot \mathsf{D}^p(s, I)
+	D_{S_{hist}^p}(f, I) \triangleq \sum_{s \in q(f)} \Vert s \Vert \cdot \mathsf{D}_{S_{hist}^p}(s, I)
 \end{equation}
 
-The same reduction can be done over all facets of a building $\mathsf{M}$, resulting in equation ~\ref{eq::corr_bul}. The weights are added in order to take into account the geometry as well as the radiometry. Once again, the structure of the model is lost when simply summing over all segments.
+The same reduction can be done over all facets of a building $\mathsf{M}$, resulting in equation ~\ref{eq::corr_bul}. The weights are added in order to take into account the geometry heterogeneity as well as the image. Once again, the structure of the model is lost when simply summing over all segments.
 \begin{equation}
 	\label{eq::corr_bul}
-	v_{image}(\mathsf{M}) = D_p(\mathsf{M}, I) \triangleq \sum_{f \in \mathsf{F}} \mathscr{A}(q(f)) \cdot \mathsf{D}_p(f, I)
+	v_{image}(\mathsf{M}) = D_{S_{hist}^p}(\mathsf{M}, I) \triangleq \sum_{f \in \mathsf{F}} \mathscr{A}(q(f)) \cdot \mathsf{D}_{S_{hist}^p}(f, I)
 \end{equation}
 
 
@@ -286,14 +286,14 @@ The same reduction can be done over all facets of a building $\mathsf{M}$, resul
 	\end{center}
 \end{figure}
 
-\subsection{Classification procedure}
+\subsection{Classification process}
 
-When training over the obtained features, two sources of flexibility are to be taken into account: the parametric nature of the taxonomy and the feature vector modularity. The first means that ground truth classes or labels to predict are not fixed but depend on the specified parameters. The second means that the classifier model must adapt well to different input vectors types and sizes. Each is addressed as explained herein.
+Two sources of flexibility are to be taken into account: the parametric nature of the taxonomy and the feature vector heterogeneity. The first means that ground truth classes or labels to predict are not fixed but depend on the specified parameters. The second means that the classifier model must adapt well to different input vectors types and sizes.
 
-\subsubsection{Taxonomy parametrization.}
-The three identified parameters determines the set of labels to work with. Depending on the \textbf{target \textit{finesse}}, at the first level $1$, it is a binary classification problem: Valid or Error. At the next $\textit{finesse}=2$, the other parameters intervene. The \textbf{\acrshort{acr::elod}}, can take two values, in the aerial reconstruction case, $\acrshort{acr::lod}1$ or $\acrshort{acr::lod}2$. If fixed at $\acrshort{acr::lod}1$, it is a binary classification problem: Valid or Building error. In the $\acrshort{acr::lod}2$ case, and if the \textbf{exclusivity} is on, then it is a multi-class problem: Valid, Building error or Facet errors, while, if set off, it becomes a multi-label one: Valid, Building error and Facet errors. At the last $\textit{finesse}=3$ level, if the \textbf{exclusivity} is on, it is a it is a $2$-stage classification problem. In the first stage, a multi-class, or simply binary in case $\acrshort{acr::elod} = \acrshort{acr::lod}1$, problem, like in the previous semantic degree, predicts the error family, after which a second multi-label problem decides between the predicted error family children. In the case where the \textbf{exclusivity} is off, it is a $1$-stage multi-label problem that guesses the existence of each atomic error corresponding to the chosen \acrshort{acr::elod}. Table~\ref{tab::problems} summarizes these cases.
+\subsubsection{Classification problems.}
+Both the classification problem nature and the set of labels to work with are determined by the three previously defined taxonomy parameters (\textit{c.f.} Table~\ref{tab::problems}). The first \textbf{target \textit{finesse}} $= 1$ level corresponds to a binary classification problem: Valid or Error. At the next one $\textit{finesse}=2$, the other parameters intervene. The textbf{\acrshort{acr::elod}} can take then two values in the aerial reconstruction case: $\acrshort{acr::lod}1$ or $\acrshort{acr::lod}2$. If fixed at $\acrshort{acr::lod}1$, it is a binary classification problem: Valid or Building error. For $\acrshort{acr::lod}2$, and if the \textbf{exclusivity} is on, then it is a multi-class problem: Valid, Building error or Facet errors, while, if set off, it becomes a multi-label one: Valid, Building error and Facet errors. At the last $\textit{finesse}=3$ level, if the \textbf{exclusivity} is on, it is a $2$-stage classification problem. In the first stage, a multi-class, or simply binary in case $\acrshort{acr::elod} = \acrshort{acr::lod}1$, problem, like in the previous semantic degree, predicts the error family, after which a second multi-label problem decides between the predicted error family children. If the \textbf{exclusivity} is off, it is a $1$-stage multi-label problem that guesses the existence of each atomic error corresponding to the chosen \acrshort{acr::elod}.
 
-\begin{table}
+\begin{table}[H]
 	\begin{center}
 		\begin{tabular}{c c c x{8cm}}
 			\toprule
@@ -310,54 +310,56 @@ The three identified parameters determines the set of labels to work with. Depen
             $3$ & $\acrshort{acr::lod}2$ & off & MultiLabel(children(Building error)$\cup$ children(Facet error))\\
             \bottomrule
 		\end{tabular}
-        \caption{\label{tab::problems} All possible classification problem types summary. $children(\cdot)$ gives the children in this sense of the taxonomy tree (Figure~\ref{fig::taxonomy}).}
+        \caption{\label{tab::problems} All possible classification problem types summary. children($e$) lists the error $e$ children in the taxonomy tree (Figure~\ref{fig::taxonomy}).}
 	\end{center}
 \end{table}
 
-A multi-class classification problem decides, for one label, which is the most probable value. The multi-label problem decides, for multiple labels, the most probable state: present ($+1$) or absent ($-1$). In the multi-stage setting, one decides at each level the most probable class or labels which impact the next stages of prediction. Errors are easily propagated in the last case. That is why, the rest of the study is not interested in this case. Since it focuses on semantic evaluation, the first \textit{finesse} degree is not experimented. Furthermore, it can be inferred from higher levels of \textit{finesse}.
+In a multi-class classification problem decides, each instance has only one that label that can take multiple values (or two in the special case of binary classification) and only one is chosen. The multi-label problem decides, for multiple labels, the most probable state: present ($+1$) or absent ($-1$). In the multi-stage setting, one decides at each level the most probable class or labels which impact the next stages of prediction. Errors are easily propagated in the last case. That is why, the rest of the study is not interested in this case. Since it focuses on semantic evaluation, the first \textit{finesse} degree is not experimented. Furthermore, it can be inferred from higher levels of \textit{finesse}.
 
-\subsubsection{Features modularity.} The highly modular nature of proposed features and the high number of parameters to study restricts the choice of classifiers. Optimizing model features over a multiple dimension parameter space can be very costly. Random forest classifier~\cite{breiman2001random} are a good choice in this setting. Relying on their ensemblist nature, a high number of trees --- from \SIrange{800}{1000}{elements} --- is necessary to cover most of the feature space and a weak tree depth ($4$) to help avoiding overfitting during training. Another reason for the random forest choice, is its capacity to take into account multiple feature types and dynamics. It adapts also to any classification paradigm: multi-class or multi-label. In the later case, a one-vs-all approach is adopted in addition so as to address each label differently.
+\subsubsection{Classifier choice.} The highly modular nature of proposed features and the high number of parameters to study restricts the choice of classifiers. Optimizing model features over a multiple dimension parameter space can be very costly. Random forest classifiers~\cite{breiman2001random} are a good choice in this setting. They can manage a great number of features with different types and different dynamics. It can also perform embedded feature selection that can be used to assess the added value of each type of feature. Relying on bagging strategy, a high number of trees (1000 elements) is necessary to cover most of the feature space and a weak tree depth ($4$) to help avoiding overfitting during training. Another reason for the random forest choice, is its capacity to take into account multiple feature types and dynamics. It adapts also to any classification paradigm: multi-class or multi-label. In the later case, a one-vs-all approach is adopted in addition so as to address each label differently.
 \section{Experiments}
 
 Experiments were conducted to test the described baseline methodology using the previously established taxonomy.
 \subsection{Data}
 
-The used dataset results from an urban reconstruction algorithm over Elancourt ($78$, France). The studied scene spans an area of around \SI{15}{\km\squared}. It contains residential districts with mostly bi-level buildings, industrial Manhattan world like area, a stadium and administrative buildings as schools. $1501$ buildings that were modeled using cadaster footprints~\cite{Durupt2006} are evaluated. The algorithm simulates possible roof structures with constraints on facet dimensions from \SI{0.06}{\m} spatial resolution \acrshort{acr::dsm}. The best roof structure is selected after scoring the extrapolated roofs. Orthogonal building fa\c{c}ades connect the best roof to the terrain. These $2.5D$ models have a $\acrshort{acr::lod}2$ level. They were annotated using the atomic errors list provided by our taxonomy. Table~\ref{tab::statistics} reports these errors statistics over the annotated dataset.
+The used dataset results from an urban reconstruction algorithm over Elancourt (France). The studied scene spans an area of around \SI{15}{\km\squared}. It contains a stadium, a petrol station, residential districts with mostly bi-level buildings, industrial areas with flat roof buildings and administrative edifices like schools. These were modeled using the algorithm described in~\cite{Durupt2006} out of footprints and an aerial photogrammetric \acrshort{acr::dsm} with a \SI{0.06}{\m} spatial resolution. This method simulates possible roof structures with constraints on facet dimensions. The best roof structure is selected after scoring the extrapolated roofs. Finally, orthogonal building fa\c{c}ades connect the best roof to the ground. The produced $2.5D$ models have a $\acrshort{acr::lod}2$ level.  $1501$ buildings are considered for evaluation. They were annotated according to the atomic errors list provided by our taxonomy. Table~\ref{tab::statistics} reports these errors statistics over the annotated dataset.
 
 \begin{table}
-                    \scriptsize
-                    \begin{center}
-                        \begin{tabular}{|x{1.8cm} | x{1.8cm} | x{3cm} | x{2.8cm} | x{2.5cm}|}
-                            \hline
-                            \multicolumn{1}{|c|}{\textbf{Error Family}} & \textbf{Occurrence ratio} & \textbf{\emph{Atomic} error} & \textbf{Family conditional occurrence ratio} & \textbf{Absolute occurrence ratio} \\
-                            \hline
-                            Unqualifiable & $0.0180$ & -- & -- & -- \\
-                            \hline
-                            \hline
-                            \multirow{4}{*}{Building Errors} & \multirow{4}{*}{$0.8235$} & Over segmentation & $0.8285$ & $0.6822$\\
-                            \cline{3-5}
-                                &                   & Under segmentation & $0.2824$ & $0.2325$ \\
-                            \cline{3-5}
-                                &                   & Imprecise footprint & $0.1521$ & $0.1252$ \\
-                            \cline{3-5}
-                                &                   & Imprecise height & $0.0057$ & $0.0047$ \\
-                            \hline
-                            \hline
-                            \multirow{4}{*}{Facet Errors} & \multirow{4}{*}{$0.7249$} & Over segmentation & $0.8971$ & $0.6502$ \\
-                            \cline{3-5}
-                                &                   & Under segmentation & $0.1314$ & $0.0953$ \\
-                            \cline{3-5}
-                                &                   & Imprecise segmentation & $0.1351$ & $0.9793$ \\
-                            \cline{3-5}
-                                &                   & Imprecise slope & $0.0193$ & $0.0140$ \\
-                            \hline
-                        \end{tabular}
-                        \caption{\label{tab::statistics} Ground truth statistics over the dataset.}
-                    \end{center}
-                \end{table}
+    \scriptsize
+    \begin{center}
+        \begin{tabular}{|x{1.8cm} | x{1.8cm} | x{3cm} | x{2.8cm} | x{2.5cm}|}
+            \hline
+            \multicolumn{1}{|c|}{\textbf{Error Family}} & \textbf{Occurrence ratio} & \textbf{\emph{Atomic} error} & \textbf{Family conditional occurrence ratio} & \textbf{Absolute occurrence ratio} \\
+            \hline
+            Unqualifiable & $0.0180$ & -- & -- & -- \\
+            \hline
+            \hline
+            \multirow{4}{*}{Building Errors} & \multirow{4}{*}{$0.8235$} & Over segmentation & $0.8285$ & $0.6822$\\
+            \cline{3-5}
+                &                   & Under segmentation & $0.2824$ & $0.2325$ \\
+            \cline{3-5}
+                &                   & Imprecise footprint & $0.1521$ & $0.1252$ \\
+            \cline{3-5}
+                &                   & Imprecise height & $0.0057$ & $0.0047$ \\
+            \hline
+            \hline
+            \multirow{4}{*}{Facet Errors} & \multirow{4}{*}{$0.7249$} & Over segmentation & $0.8971$ & $0.6502$ \\
+            \cline{3-5}
+                &                   & Under segmentation & $0.1314$ & $0.0953$ \\
+            \cline{3-5}
+                &                   & Imprecise segmentation & $0.1351$ & $0.9793$ \\
+            \cline{3-5}
+                &                   & Imprecise slope & $0.0193$ & $0.0140$ \\
+            \hline
+        \end{tabular}
+        \caption{\label{tab::statistics} Ground truth statistics over the dataset containing $1501$ buildings.}
+    \end{center}
+\end{table}
+
+Both error families are highly present in the dataset. Only a small portion ($27$) of instances are unqualifiable, being occluded, completely or partialy, by vegetation. At the atomic level, a part from building and facet over segmentation, most errors are under represented with an extreem case of height imprecision error tally of $7$. We will see later on how the dataset unbalanced nature affect test results.
 \subsection{Results}
 
-Based on the devised pipeline, four possibilities were tested: geometric features only, geometric and altimetric features, geometric and image features and geometric, altimetric and image features. Labels are extracted from a non \textbf{exclusive} and \textbf{\acrshort{acr::elod} $=\acrshort{acr::lod}2$} taxonomy. Both levels $\textit{finesse} = 2, 3$ are tested. The results are averaged over a $10$-fold cross validation tests. The overall accuracy is not interesting to report since some labels are aunder represented in the dataset.
+Based on the devised pipeline, four feature configurations were tested: geometric features only, geometric and altimetric features, geometric as well as image features and geometric, altimetric and image features. Labels are extracted from a non \textbf{exclusive} and \textbf{\acrshort{acr::elod} $=\acrshort{acr::lod}2$} taxonomy. Both \textit{finesse} levels $2$ and $3$ are tested. The results are averaged over a $10$-fold cross validation tests. The overall accuracy is not interesting regarding the highly unbalanced nature of labels.
 
 \begin{table}
 	\scriptsize
