@@ -8,6 +8,7 @@
 \usepackage{color}
 \usepackage[width=122mm,left=12mm,paperwidth=146mm,height=193mm,top=12mm,paperheight=217mm]{geometry}
 
+\usepackage{wrapfig}
 \usepackage{multirow}
 \usepackage{graphicx}
 \usepackage{subfig}
@@ -61,7 +62,7 @@
 \maketitle
 
 \begin{abstract}
-    We are tackling the problem of 3D model reconstruction quality evaluation. Currently, no scalable approach has been proposed to semantically assess automatic reconstruction methods output. One must rely on the presence of high precision models that are not easily affordable. In our approach, we try to predict building models quality based on its geometry and available remote sensing data.
+    Currently, no scalable approach is available to semantically assess automatic reconstruction. The existing state of the art quality evaluation methods do not take into account the highly semantic nature of building models and generally rely on non affordable high precision reference data. We present a building model evaluation framework in order to solve this problem. To that effect, model defects were compiled in an rich, hierarchical and flexible taxonomy that is parametrizable. Using this taxonomy, building models quality is predicted based on their intrinsic geometry properties and, when available, on image and depth data. A feature baseline is presented and tested over a 1501 model dataset. It can detect on average $96\%$ of abundantly present errors and fails to top $42\%$ recall on the under represented ones. These results motivates further work devising better feature extraction methods over a more well balanced and rich dataset.
     \keywords{3D urban modeling, Quality assessment.}
 \end{abstract}
 
@@ -260,6 +261,22 @@ Building edges correspond to sharp discontinuities in images. The idea is to com
 	\label{eq::corr_seg}
     \mathsf{D}_S(s, I) \triangleq S \bigg( \Big(\frac{\nabla I(g) \cdot \vec{n}(s)}{\Vert \nabla I(g)\Vert})_{g \in I \textrm{ and } g \cap s} \Big)\bigg)
 \end{equation}
+
+\begin{figure}
+    \vspace{-3em}
+	\begin{center}
+    	\floatbox{figure}{
+            \begin{subfloatrow}[2]
+                \ffigbox[\FBwidth]{\caption{\tiny The building projection compared to the orthoimage.}\label{fig::radio}}{\includegraphics[width=.33\textwidth]{images/radio_vector}}
+                \ffigbox[\FBwidth]{\caption{\tiny The green squares represent intersecting pixels with the red segment. The gradient vector in purple is compared to the segment normal in black.}\label{fig::seg_inter}}{\includestandalone[mode=buildnew, width=.33\textwidth]{radiometric_features}}
+            \end{subfloatrow}
+        }{
+        	\caption{Image features illustration.} \label{fig::image}
+        }
+	\end{center}
+    \vspace{-4em}
+\end{figure}
+
 Once the distribution is computed over a segment, it is compiled over all facet edges to define the distribution over projected facets. In the case of histograms $S_{hist}^p$ with the same parameters (and thus the same bins), it is equivalent to summing out the previous vectors $\mathsf{D}_{S_{hist}^p}(s, I)$ over segments $s$ forming the polygon projection $q(f)$ of the facet $f$ on as the image $I$. In order to take into account the variability of segment dimensions, this sum is weighted by segment lengths.
 \begin{equation}
 	\label{eq::corr_fac}
@@ -272,20 +289,6 @@ The same reduction can be done over all facets of a building $\mathsf{M}$, resul
 	v_{image}(\mathsf{M}) = D_{S_{hist}^p}(\mathsf{M}, I) \triangleq \sum_{f \in \mathsf{F}} \mathscr{A}(q(f)) \cdot \mathsf{D}_{S_{hist}^p}(f, I)
 \end{equation}
 
-
-\begin{figure}[H]
-	\begin{center}
-    	\floatbox{figure}{
-            \begin{subfloatrow}[2]
-                \ffigbox[\FBwidth]{\caption{\tiny The building projection compared to the orthoimage.}\label{fig::radio}}{\includegraphics[width=.33\textwidth]{images/radio_vector}}
-                \ffigbox[\FBwidth]{\caption{\tiny The green squares represent intersecting pixels with the red segment. The gradient vector in purple is compared to the segment normal in black.}\label{fig::seg_inter}}{\includestandalone[mode=buildnew, width=.33\textwidth]{image_features}}
-            \end{subfloatrow}
-        }{
-        	\caption{Image features illustration.} \label{fig::image}
-        }
-	\end{center}
-\end{figure}
-
 \subsection{Classification process}
 
 Two sources of flexibility are to be taken into account: the parametric nature of the taxonomy and the feature vector heterogeneity. The first means that ground truth classes or labels to predict are not fixed but depend on the specified parameters. The second means that the classifier model must adapt well to different input vectors types and sizes.
@@ -293,7 +296,7 @@ Two sources of flexibility are to be taken into account: the parametric nature o
 \subsubsection{Classification problems.}
 Both the classification problem nature and the set of labels to work with are determined by the three previously defined taxonomy parameters (\textit{c.f.} Table~\ref{tab::problems}). The first \textbf{target \textit{finesse}} $= 1$ level corresponds to a binary classification problem: Valid or Error. At the next one $\textit{finesse}=2$, the other parameters intervene. The textbf{\acrshort{acr::elod}} can take then two values in the aerial reconstruction case: $\acrshort{acr::lod}1$ or $\acrshort{acr::lod}2$. If fixed at $\acrshort{acr::lod}1$, it is a binary classification problem: Valid or Building error. For $\acrshort{acr::lod}2$, and if the \textbf{exclusivity} is on, then it is a multi-class problem: Valid, Building error or Facet errors, while, if set off, it becomes a multi-label one: Valid, Building error and Facet errors. At the last $\textit{finesse}=3$ level, if the \textbf{exclusivity} is on, it is a $2$-stage classification problem. In the first stage, a multi-class, or simply binary in case $\acrshort{acr::elod} = \acrshort{acr::lod}1$, problem, like in the previous semantic degree, predicts the error family, after which a second multi-label problem decides between the predicted error family children. If the \textbf{exclusivity} is off, it is a $1$-stage multi-label problem that guesses the existence of each atomic error corresponding to the chosen \acrshort{acr::elod}.
 
-\begin{table}[H]
+\begin{table}
 	\begin{center}
 		\begin{tabular}{c c c x{8cm}}
 			\toprule
@@ -322,7 +325,7 @@ In a multi-class classification problem decides, each instance has only one that
 Experiments were conducted to test the described baseline methodology using the previously established taxonomy.
 \subsection{Data}
 
-The used dataset results from an urban reconstruction algorithm over Elancourt (France). The studied scene spans an area of around \SI{15}{\km\squared}. It contains a stadium, a petrol station, residential districts with mostly bi-level buildings, industrial areas with flat roof buildings and administrative edifices like schools. These were modeled using the algorithm described in~\cite{Durupt2006} out of footprints and an aerial photogrammetric \acrshort{acr::dsm} with a \SI{0.06}{\m} spatial resolution. This method simulates possible roof structures with constraints on facet dimensions. The best roof structure is selected after scoring the extrapolated roofs. Finally, orthogonal building fa\c{c}ades connect the best roof to the ground. The produced $2.5D$ models have a $\acrshort{acr::lod}2$ level.  $1501$ buildings are considered for evaluation. They were annotated according to the atomic errors list provided by our taxonomy. Table~\ref{tab::statistics} reports these errors statistics over the annotated dataset.
+The used dataset results from an urban reconstruction algorithm over Elancourt (France). The studied scene spans an area of around \SI{15}{\km\squared}. It contains a stadium, a petrol station, residential districts with mostly bi-level buildings, industrial areas with flat roof buildings and administrative edifices like schools. These were modeled, using the algorithm described in~\cite{Durupt2006}, out of footprints and an aerial photogrammetric \acrshort{acr::dsm} with a \SI{0.06}{\m} spatial resolution. This method simulates possible roof structures with constraints on facet dimensions. The best roof structure is selected after scoring the extrapolated roofs. Finally, orthogonal building fa\c{c}ades connect the best roof to the ground. The produced $2.5D$ models have a $\acrshort{acr::lod}2$ level.  $1501$ buildings are considered for evaluation. They were annotated according to the atomic errors list provided by our taxonomy. Table~\ref{tab::statistics} reports these error statistics over the annotated dataset.
 
 \begin{table}
     \scriptsize
@@ -356,10 +359,10 @@ The used dataset results from an urban reconstruction algorithm over Elancourt (
     \end{center}
 \end{table}
 
-Both error families are highly present in the dataset. Only a small portion ($27$) of instances are unqualifiable, being occluded, completely or partialy, by vegetation. At the atomic level, a part from building and facet over segmentation, most errors are under represented with an extreem case of height imprecision error tally of $7$. We will see later on how the dataset unbalanced nature affect test results.
+Both error families are highly present in the dataset. Only a small portion ($27$ samples) of instances are unqualifiable, being occluded, completely or partialy, by vegetation. At the atomic level, a part from building and facet over segmentation, most errors are under represented with an extreem case of height imprecision error tally of $7$. We will see later on how the dataset unbalanced nature affect test results.
 \subsection{Results}
 
-Based on the devised pipeline, four feature configurations were tested: geometric features only, geometric and altimetric features, geometric as well as image features and geometric, altimetric and image features. Labels are extracted from a non \textbf{exclusive} and \textbf{\acrshort{acr::elod} $=\acrshort{acr::lod}2$} taxonomy. Both \textit{finesse} levels $2$ and $3$ are tested. The results are averaged over a $10$-fold cross validation tests. The overall accuracy is not interesting regarding the highly unbalanced nature of labels.
+Based on the devised pipeline, four feature configurations were tested: geometric features only, geometric and altimetric features, geometric as well as image features and geometric, altimetric and image features. Geometric features number a $20$ dimension vector, altimetric ones produce a vector of length $20$ as much as the image ones. A \SI{0.06}{\m} spatial resolution \acrshort{acr::dsm} and an orthorectified image with \SI{0.2}{\m} pixel size are used for deriving altimetric and image features. Labels are extracted from a non \textbf{exclusive} and \textbf{\acrshort{acr::elod} $=\acrshort{acr::lod}2$} taxonomy. Both \textit{finesse} levels $2$ and $3$ are tested. The results are averaged over a $10$-fold cross validation tests. The overall accuracy is not interesting regarding the highly unbalanced nature of labels.
 
 \begin{table}
 	\scriptsize
@@ -376,7 +379,7 @@ Based on the devised pipeline, four feature configurations were tested: geometri
             \hline
 		\end{tabular}
 	\end{center}
-    \caption{\label{tab::f2_res}Results reported for a training at $\textit{finesse}=2$.}
+    \caption{\label{tab::f2_res}Test results reported for $\textit{finesse}=2$.}
 \end{table}
 
 \begin{table}
@@ -407,10 +410,17 @@ Based on the devised pipeline, four feature configurations were tested: geometri
             \hline
 		\end{tabular}
 	\end{center}
-    \caption{\label{tab::f3_res}Results reported for a training at $\textit{finesse}=3$.}
+    \caption{\label{tab::f3_res}Test results reported for $\textit{finesse}=3$.}
 \end{table}
-
 \subsection{Discussion}
+
+Results are analyzed over three criteria:
+\begin{itemize}
+	\item \textit{Finesse}: in terms of precision, on average $7.2\%$ is lost , at $\textit{finesse} = 3$, compared to $\textit{finesse} = 3$, across all features configurations, regarding Facet errors family, while only $.6\%$ is gained, at the same level, for Building errors. The same happens with regards to recall which is diminished by $2.0\%$ for Facet errors family and $8.3\%$ for the Building family. If determining the error family is enough then training the model at the same level is recommended.
+    \item Feature configurations: results generally vary in a $2\%$ margin except in $3$ cases. The easiest to spot are precision instability for Facet inexact and under segmentation. This is explained by their under detection: only $1$ or $2$ are rightfully detected as errors and while valid instances that are detected vary more between $1$ and $5$. Inexact footprint recall looses around $4\%$ in precision, when radiometric features are added, represent the second case: it could result from the poor spatial resolution of the used orthorectified image. The last and most stark one, is when radiometric features are added and Building under segmentation gains around $9\%$ in recall while loosing only around $1.5\%$. This may be explained by the high radiometric heterogeneity at building roofs.
+    \item \textit{Atomic} errors: as predicted previously, errors that are well represented in the dataset achieve high recall and precision values. However, the good precision scores hide is that a big percentage of valid errors are flagged as errors as a result of their over representation. The others, being represented lower $23\%$ of the whole, are not well detected, especially in the case of very rare errors: height imprecision ($7$) or slope errors ($21$). 
+\end{itemize}
+
 \section{Conclusion}
 
 \bibliographystyle{splncs}
