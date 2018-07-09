@@ -34,21 +34,21 @@
 
     \begin{tikzpicture}
     	\node (residual) at (0,0) {\includegraphics[height=1cm, angle=270]{images/residual}};
-        \path (residual.south) + (0,-.2) node (residual_legend) {\tiny Altimetric.};
+        \path (residual.south) + (0,-.2) node (residual_legend) {\tiny (c) Height based};
         
         \path (residual.west) + (-.8,0) node (facet_graph) {\includestandalone[mode=buildnew, height=1cm]{building_graph}};
-        \path (facet_graph |- residual_legend) + (0,-.05) node (facet_graph_legend) {\tiny Geometric.};
+        \path (facet_graph |- residual_legend) node (facet_graph_legend) {\tiny (b) Geometric};
 
         \path (facet_graph.west) + (-1,0) node (model) {\includestandalone[mode=buildnew, height=1cm]{building_model}};
-        \path (model |- residual_legend) node (model_legend) {\tiny Input model.};
+        \path (model |- residual_legend) node (model_legend) {\tiny (a) Input model};
         
         \path (residual.east) + (.8,0) node (ortho_projection) {\includegraphics[height=1cm, angle=270]{images/orthoprojection}};
-        \path (ortho_projection |- residual_legend) node (orthoprojection_legend) {\tiny Radiometric.};
+        \path (ortho_projection |- residual_legend) node (orthoprojection_legend) {\tiny (d) Image based};
         
-        \draw[decorate, decoration={brace, amplitude=3pt}] (facet_graph.north west) -- (ortho_projection.east |- facet_graph.north) node[midway, auto]{\tiny Features};
+        \draw[decorate, decoration={brace, amplitude=3pt}] (facet_graph.north west) -- (ortho_projection.east |- facet_graph.north) node[midway, yshift=5pt]{\tiny Features};
 
 		\path (ortho_projection.east) + (1,0) node (errors) {\includestandalone[mode=buildnew, height=1cm]{building_errors}};
-        \path (errors |- residual_legend) node (errors_legend) {\tiny Erroneous building:};
+        \path (errors |- residual_legend) node (errors_legend) {\tiny (d) Erroneous building:};
         \path (errors_legend.south) + (0,-.1) node[align=left] (errors_list) {\tiny {\color{red}$\blacksquare$ Fidelity error}.};
          \path (errors_list.south) node[align=left] (errors_list) {\tiny {\color{blue}$\blacksquare$ Modeling error}.};
          
