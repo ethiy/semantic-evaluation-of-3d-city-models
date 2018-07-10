@@ -79,7 +79,7 @@
         
         \path (facet_errors |- b_under.south) + (-1.5,-1.25) node (temp) {};
         \path (lod_min |- b_under.south) + (-1.5,-1.25) node (last) {};
-        \draw[decorate, decoration={brace, amplitude=5pt}] (b_under.south) + (-1,-1.25) -- (temp) node[midway, yshift=-2em, align=center]{Family errors:\\possible hierarchy};
-        \draw[decorate, decoration={brace, amplitude=5pt,mirror}] (b_under.south) + (-1,-1.25) -- (last) node[midway, yshift=-2em, align=center]{\textit{Atomic} errors:\\no hierarchy};
+        \draw[decorate, decoration={brace, amplitude=5pt}] (b_under.south) + (-1,-1.25) -- (temp) node[midway, yshift=-2em, align=center]{Family errors:\\possible \textbf{exclusivity}};
+        \draw[decorate, decoration={brace, amplitude=5pt,mirror}] (b_under.south) + (-1,-1.25) -- (last) node[midway, yshift=-2em, align=center]{\textit{Atomic} errors:\\no \textbf{exclusivity}};
     \end{tikzpicture}
 \end{document}
