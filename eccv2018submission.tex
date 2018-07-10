@@ -442,7 +442,7 @@ Results are analyzed over three criteria:
 			\hline
 			\multicolumn{3}{| c ||}{\includegraphics[height=.1\textheight,valign=m,margin=.1cm .1cm]{images/prediction_results/valid_as_bul_over}} & \multicolumn{3}{ c ||}{\includegraphics[height=.1\textheight,valign=m,margin=0cm .1cm]{images/prediction_results/no_imprec_no_fac_over}} & \multicolumn{3}{ c ||}{\includegraphics[height=.1\textheight,valign=m,margin=0cm .1cm]{images/prediction_results/no_under_seg}} & \multicolumn{3}{ c |}{\includegraphics[height=.1\textheight,valign=m,margin=0cm .1cm]{images/prediction_results/no_bul_under_seg}} \\
 			\hline
-			\textbf{Errors} & \textbf{G.t} & \textbf{Pred.} & \textbf{Errors} & \textbf{G.t} & \textbf{Pred.} & \textbf{Errors} & \textbf{G.t} & \textbf{Pred.} & \textbf{Errors} & \textbf{G.t} & \textbf{Pred.}\\
+			\textbf{Errors} & \textbf{G.T.} & \textbf{Pred.} & \textbf{Errors} & \textbf{G.T.} & \textbf{Pred.} & \textbf{Errors} & \textbf{G.T.} & \textbf{Pred.} & \textbf{Errors} & \textbf{G.T.} & \textbf{Pred.}\\
             \hline
             Buil. over seg. & \xmark & \cmark & Buil. under seg. & \xmark & \cmark & Buil. over seg. & \cmark & \cmark & Buil. over seg. & \cmark & \xmark \\
             Valid & \cmark & \xmark & Fac. impr. seg. & \cmark & \xmark & Fac. under seg. & \cmark & \xmark &  Fac. over seg. & \cmark & \xmark \\
@@ -450,7 +450,7 @@ Results are analyzed over three criteria:
             --- & --- & --- & --- & --- & --- & --- & --- & --- &  Footprint & \cmark & \cmark \\
             \hline
 		\end{tabular}
-        \caption{\label{fig::results} Predicted (Pred.) errors compared to (G.t) ground truth labels illustrated for some pathological cases. In the first image, the building outline is similar to samples where the building is over segmented. In the second example, the bulding is detected as under segmented due to the presence of a balcony and an annex smaller building. In the third sample, while it is correctly detected as an over segmented building it fails to detect the under segmented roof. In the last one, except the footprint error, all others are ignored as there are no such samples where building over and under segmentation are present.}
+        \caption{\label{fig::results} Predicted (Pred.) errors compared to ground truth (G.T.) labels illustrated in some pathological cases. In the first image, the building outline is similar to samples where buildings are over segmented. In the second example, the building is wrongfully detected as under segmented due to the presence of a balcony and an annex smaller building. In the third sample, while being correctly predicted as an over segmented building it fails to detect the under segmented roof. Finally, in the last depiction, except the caught footprint error, the rest are ignored as there are no such samples, in the dataset, where building over and under segmentation co-occur.}
 	\end{center}
 \end{figure}
 
