@@ -259,13 +259,13 @@ Each building $\mathsf{M}$ can consequently be characterized by a geometric feat
 Additionally to individual facet statistics, regularity is taken into account by looking into adjacent graph nodes as in~\cite{Zhou2012}. Such features expresse only a small part of structural information. Taking this type of information into account would implicate graph comparisons which are not genuinely simple tasks to achieve. Since our objective is to build a baseline, this approach has not been considered for the moment.
 
 \noindent
-\textbf{Altimetric features.}
+\textbf{Height based features.}
 For this modality, raw depth information is provided by a \acrlong{acr::dsm} as a $2D$ height grid $dsm$. It must have been produced around the same time of the $3D$ reconstruction so as to avoid time dynamics. It is compared to the model altimetry like in~\cite{Bredif2007},~\cite{zebedin2008fusion}. The latter is inferred from its facets plane equations. It is then rasterized into the image $alt$ at the spatial resolution of the $dsm$. Their difference reveals a discrepancy map that can be exploited for the prediction (\textit{c.f.} Figure~\ref{fig::pipeline}.c). A baseline approach is proposed relying on pixel values statistics computed using previously defined functions $S$.
 \begin{equation}
 	\label{eq::alti_feat}
-    v_{altimetric}(\mathsf{M}) = S\big( dsm - alt \big)
+    v_{height}(\mathsf{M}) = S\big( dsm - alt \big)
 \end{equation}
-Equation~\ref{eq::alti_feat} summarizes how building altimetric features are computed. Different from a root mean square metric~\cite{lafarge2012creating},~\cite{Poullis2013}, the histogram captures the the discrepancy distribution. However, as for the previous geometric attributes, structural information coming from the model is lost.
+Equation~\ref{eq::alti_feat} summarizes how building height based features are computed. Different from a root mean square metric~\cite{lafarge2012creating},~\cite{Poullis2013}, the histogram captures the the discrepancy distribution. However, as for the previous geometric attributes, structural information coming from the model is lost.
 
 \noindent
 \textbf{Image features.}
@@ -392,7 +392,7 @@ Both error families are highly present in the dataset. Only a small fraction ($2
     \caption{\label{tab::f2_res}Test results expressed in percentage for the $\textit{finesse}=2$ case. All four configurations are compared across both family errors.}
 \end{table}
 
-Based on the devised pipeline, four feature configurations were tested: ``geometric features'' only, ``geometric and altimetric features'', ``geometric and image features'' as well as ``geometric, altimetric and image features''. Each feature modality produces a $20$ dimension vector. A \SI{0.06}{\m} spatial resolution \acrshort{acr::dsm} and a \SI{0.2}{\m} pixel size orthorectified image are used to derive altimetric and image features. Labels are extracted from a non \textbf{exclusive} and \textbf{\acrshort{acr::elod} $=\acrshort{acr::lod}2$} taxonomy. Both \textit{finesse} levels $2$ and $3$ are tested. The results are averaged over a $10$-fold cross validation tests. The overall accuracy is not interesting regarding the highly unbalanced nature of labels.
+Based on the devised pipeline, four feature configurations were tested: ``geometric features'' only, ``geometric and height based features'', ``geometric and image features'' as well as ``geometric, height and image features''. Each feature modality produces a $20$ dimension vector. A \SI{0.06}{\m} spatial resolution \acrshort{acr::dsm} and a \SI{0.2}{\m} pixel size orthorectified image are used to derive height and image features. Labels are extracted from a non \textbf{exclusive} and \textbf{\acrshort{acr::elod} $=\acrshort{acr::lod}2$} taxonomy. Both \textit{finesse} levels $2$ and $3$ are tested. The results are averaged over a $10$-fold cross validation tests. The overall accuracy is not interesting regarding the highly unbalanced nature of labels.
 \begin{table}
 	\scriptsize
 	\begin{center}
@@ -428,7 +428,7 @@ Based on the devised pipeline, four feature configurations were tested: ``geomet
 Three criteria are considered when analyzing results (\textit{c.f.} Tables~\ref{tab::f2_res} and~\ref{tab::f3_res}):
 \begin{itemize}
 	\item \textit{Finesse}: scores are compared, for both \textit{finesse} levels, by averaging across all feature configurations. In terms of precision, at \textit{finesse} level $3$, compared to \textit{finesse} level $2$, ``Facet errors'' family looses $7.2\%$, while ``Building errors'' gains only $0.6\%$. The same \textit{finesse} level comparison reveals that recall is diminished by $2.0\%$ for ``Facet errors'' and $8.3\%$ for ``Building errors''. Thus, if limited to determining the error family, training the model at the \textit{finesse} level $2$ is the best alternative.
-    \item Feature configurations: image and altimetric attributes contributions are studied here. In general, results vary within a $2\%$ margin except in three cases. First, the precision instability for facet inexact and under segmentation can be spotted, as they are under detected: only one or two are rightfully identified as errors, while the number of valid instances, that are predicted as erroneous, vary between $1$ and $5$. Secondly, inexact footprint recall decreases by around $4\%$ in precision, when image features are added. This could result from the poor spatial resolution of orthorectified images. However, in the last case, image features help ``Building under segmentation'' error gaining around $9\%$ in recall while loosing only $1.5\%$ in precision. This may be explained by the high radiometric heterogeneity of building roofs.
+    \item Feature configurations: image and height attributes contributions are studied here. In general, results vary within a $2\%$ margin except in three cases. First, the precision instability for facet inexact and under segmentation can be spotted, as they are under detected: only one or two are rightfully identified as errors, while the number of valid instances, that are predicted as erroneous, vary between $1$ and $5$. Secondly, inexact footprint recall decreases by around $4\%$ in precision, when image features are added. This could result from the poor spatial resolution of orthorectified images. However, in the last case, image features help ``Building under segmentation'' error gaining around $9\%$ in recall while loosing only $1.5\%$ in precision. This may be explained by the high radiometric heterogeneity of building roofs.
     \item \textit{Atomic} errors: scores are distinguished here according to \textit{atomic} errors. As predicted, defects that are well represented in the dataset achieve high recall and precision values. The others, being represented lower than $23\%$, are not well predicted, especially in the case of very rare errors: height imprecision ($7$) or slope errors ($21$).
 \end{itemize}
 
