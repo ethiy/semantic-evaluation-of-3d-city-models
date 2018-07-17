@@ -67,7 +67,7 @@
 \maketitle
 
 \begin{abstract}
-    While automatic production of urban models from airborne data is now standard in industry, practitioners have to check the correctness of 3D models by visual inspection and detect the frequent reconstruction errors at city scale. These operations, which are done by experts, are time-consuming, typically taking two hours per square kilometer and per expert. In this work, we propose an approach for automatically assessing 3D models of buildings. Errors and defects present in 3D models are compiled in a hierarchical, versatile and parameterizable taxonomy. The quality of 3D models is predicted based on their intrinsic geometric properties and, when available, on image and depth data. A feature baseline is presented and tested over dataset containing more that one thousand models. It can detect on average $96\%$ of well-balanced errors. These results motivates further work devising better feature extraction methods over a more well balanced and rich dataset.
+    The automatic generation of 3D urban models from geospatial data is now a standard procedure in industry. However, practitioners still have to visual assess, at the scale of cities, the correctness of these models so as to detect the inevitable reconstruction errors. Such process relies on experts, and is highly time-consuming (typically, 2h/km$^2$ per expert). In this work, we propose a novel approach for automatically evluating the quality of 3D models of buildings. Errors and defects present in 3D models are compiled in a hierarchical, versatile, and parameterizable taxonomy. This allows for the first time to disentangle fidelity and modelling errors, whatever the level of details of the reconstructed buildings. The quality of 3D models is predicted using the intrinsic geometric properties of building and, when available, on image and depth data. A baseline of handcrafted yet generic  features is fed into a supervised Random Forest classifier. Both multi-class and multi-label cases are predicted. Due to the high interdependence between errors, we have the ability to retrieve all errors. . and tested over dataset containing more that one thousand models. It can detect on average $96\%$ of well-balanced errors. These results motivates further work devising better feature extraction methods over a more well balanced and rich dataset.
     \keywords{3D urban modeling, Quality assessment.}
 \end{abstract}
 
@@ -102,20 +102,19 @@
 
 Quality assessment methods can be classified according to two criteria: their output type and the reference data they use.
 
-\noindent
-\textbf{Reference Data Types.}
-All quality assessment methods need a reference data to be compared to. Indeed, existing approaches compare the 3D reconstructed building models to:
-\begin{itemize}
-    \item \textbf{Manually plotted ground truth} data with a higher spatial accuracy. These models can be obtained either from field measurements, like in ~\cite{dick2004modelling},~\cite{Kaartinen2005} with the highest possible precision ($\sigma(\text{error}) \approx \SI{0.05}{\meter}$), or using stereo-plotting~\cite{jaynes2003recognition},~\cite{Kaartinen2005},~\cite{zebedin2008fusion},~\cite{Zeng2014}. However this kind of data is not easily to come by.
-    \item \textbf{Raw sensor data}. For instance, models can be compared to \acrfull{acr::lidar} point clouds~\cite{Akca2010},~\cite{lafarge2012creating},~\cite{li2016boxfitting} or aerial images as in~\cite{boudet2006supervised},~\cite{Michelin2013}. Although these are easier to get than the previous ones, they are too low on structural information that can be used for semantic tasks.
-\end{itemize}
-\noindent
-\textbf{Evaluation Output Types.}
-The quality assessment methods can produce two kinds of outputs:
-\begin{itemize}
-    \item \textbf{Geometric fidelity metrics}: they summarize the quality of the whole assessed model. These metrics are computed at different levels: specific points of interest (such as corners or edge points) average precision~\cite{vogtle2003quality},~\cite{Kaartinen2005}, surface dissimilarity~\cite{jaynes2003recognition},~\cite{dick2004modelling},~\cite{Kaartinen2005},~\cite{zebedin2008fusion},~\cite{lafarge2012creating},~\cite{Zeng2014},~\cite{li2016boxfitting},~\cite{nan2017polyfit} or volume discrepancy to reference data~\cite{jaynes2003recognition},~\cite{Zeng2014}. These outputs have the drawback of being too general for the special case of urban structured models. Indeed, their diagnosis, far from surface reconstruction evaluation~\cite{berger2013benchmark}, needs to pinpoint specific types of errors that can be easily corrected once identified~\cite{OudeElberink2010}.
-    \item \textbf{Semantic errors}: they identify topological and geometric errors that affect building models. One example of such defects is the traffic light paradigm (``correct'', ``acceptable'', ``generalized'' and ``rejected'')~\cite{boudet2006supervised}. However, these errors depend on a vague definition of the ``generalization'' level at which models are rejected. In addition, this taxonomy does not help in localizing the model shortcomings. Another solution is to look at the issue at hand through the used reconstruction algorithm perspective. For instance, defects are discriminated in~\cite{Michelin2013} between footprint errors (``erroneous outline'', ``inexistent building'', ``missing inner court'' and ``imprecise footprint''), intrinsic reconstruction errors (``over segmentation'', ``under segmentation'', ``inexact roof'' and ``Z translation'') and ``vegetation occlusion'' errors. In the latter methods~\cite{boudet2006supervised},~\cite{Michelin2013}, the evaluation is the result of a supervised classification where predicted classes are defects listed in a taxonomy. Features used for this classification are extracted from very high spatial resolution (\SIrange{0.2}{0.25}{\m}) aerial images and \glspl{acr::dsm} like 3D segments and texture correlation scores comparison. In spite of their semantic contribution for quality evaluation, taxonomies risk overfitting to specific urban scenes or reconstruction algorithms.
-\end{itemize}
+\subsubsection{Reference Data Types.}
+Throughout existing approaches, two types of reference data are used to compare models to.
+
+First comes \textbf{manually plotted ground truth} data with very high spatial accuracy. These models can be obtained either from field measurements, like in ~\cite{dick2004modelling},~\cite{Kaartinen2005} with the highest possible precision ($\sigma(\text{error}) \approx \SI{0.05}{\meter}$), or using stereo-plotting~\cite{jaynes2003recognition},~\cite{Kaartinen2005},~\cite{zebedin2008fusion},~\cite{Zeng2014}. However this kind of data is not easy to come by.
+
+The other alternative is \textbf{Raw sensor} data. For instance, models can be compared to \acrfull{acr::lidar} point clouds~\cite{Akca2010},~\cite{lafarge2012creating},~\cite{li2016boxfitting} or aerial images as in~\cite{boudet2006supervised},~\cite{Michelin2013}. Although these are easier to get than the previous ones, they are too low on structural information which can help in semantic tasks.
+
+\subsubsection{Evaluation Output Types.}
+The quality assessment methods can produce two kinds of outputs.
+
+\textbf{Geometric fidelity metrics} summarize the quality of the whole assessed model. These metrics are computed at different levels: specific points of interest (such as corners or edge points) average precision~\cite{vogtle2003quality},~\cite{Kaartinen2005}, surface dissimilarity~\cite{jaynes2003recognition},~\cite{dick2004modelling},~\cite{Kaartinen2005},~\cite{zebedin2008fusion},~\cite{lafarge2012creating},~\cite{Zeng2014},~\cite{li2016boxfitting},~\cite{nan2017polyfit} or volume discrepancy to reference data~\cite{jaynes2003recognition},~\cite{Zeng2014}. These outputs have the drawback of being too general for the special case of urban structured models. Indeed, their diagnosis, far from surface reconstruction evaluation~\cite{berger2013benchmark}, needs to pinpoint specific types of errors that can be easily corrected once identified~\cite{OudeElberink2010}.
+
+On the other hand, \textbf{Semantic errors} identify topological and geometric errors that affect building models. One example of such defects is the traffic light paradigm (``correct'', ``acceptable'', ``generalized'' and ``rejected'')~\cite{boudet2006supervised}. However, these errors depend on a vague definition of the ``generalization'' level at which models are rejected. In addition, this taxonomy does not help in localizing the model shortcomings. Another solution is to look at the issue at hand through the used reconstruction algorithm perspective. For instance, defects are discriminated in~\cite{Michelin2013} between footprint errors (``erroneous outline'', ``inexistent building'', ``missing inner court'' and ``imprecise footprint''), intrinsic reconstruction errors (``over segmentation'', ``under segmentation'', ``inexact roof'' and ``Z translation'') and ``vegetation occlusion'' errors. In the latter methods~\cite{boudet2006supervised},~\cite{Michelin2013}, the evaluation is the result of a supervised classification where predicted classes are defects listed in a taxonomy. Features used for this classification are extracted from very high spatial resolution (\SIrange{0.2}{0.25}{\m}) aerial images and \glspl{acr::dsm} like 3D segments and texture correlation scores comparison. In spite of their semantic contribution for quality evaluation, taxonomies risk overfitting to specific urban scenes or reconstruction algorithms.
 
 \noindent
 \textbf{Main objective.}
@@ -166,17 +165,17 @@ In the present case, $2.5D$ buildings are evaluated. The next \textit{atomic} er
 	\begin{itemize}
 		\item \textbf{Building errors} family (\textit{c.f.} Figure~\ref{fig::bul_err}):
         \begin{itemize}
-        	\item Under segmentation: two or more buildings are modeled as one;
-            \item Over segmentation: one building is subdivided into two or more buildings;
-            \item Inexact footprint: erroneous building footprint, grouping geometric inaccuracies and topological defects as missing inner courts ($\equiv$ not the right number of polygon holes);
-            \item Imprecise height: wrong building height estimation;
+        	\item Under segmentation (\textit{BUS}): two or more buildings are modeled as one;
+            \item Over segmentation (\textit{BOS}): one building is subdivided into two or more buildings;
+            \item Inexact footprint (\textit{BInF}): erroneous building footprint, grouping geometric inaccuracies and topological defects as missing inner courts ($\equiv$ not the right number of polygon holes);
+            \item Imprecise height (\textit{BImH}): wrong building height estimation;
         \end{itemize}
 		\item \textbf{Facet errors} family (\textit{c.f.} Figure~\ref{fig::fac_err}):
         \begin{itemize}
-        	\item Under segmentation: two or more facets are modeled as one;
-            \item Over segmentation: one facet is subdivided into two or more facets;
-            \item Inexact segmentation: facet edges are inaccurate;
-            \item Imprecise slope: wrong facet slope estimation.
+        	\item Under segmentation (\textit{FUS}): two or more facets are modeled as one;
+            \item Over segmentation (\textit{FOS}): one facet is subdivided into two or more facets;
+            \item Inexact segmentation (\textit{FIS}): facet edges are inaccurate;
+            \item Imprecise slope (\textit{FImS}): wrong facet slope estimation.
         \end{itemize}
 	\end{itemize}
 
@@ -379,7 +378,7 @@ Both error families are highly present in the dataset. Only a small fraction ($2
 	\begin{center}
         \begin{tabular}{|x{1.4cm} | x{1.2cm} x{1.2cm} | x{1.2cm} x{1.2cm} | x{1.2cm} x{1.2cm} | x{1.2cm} x{1.2cm}|}
 			\hline
-            &\multicolumn{2}{x{2.4cm}|}{\textbf{Geom. feats.}} & \multicolumn{2}{x{2.4cm}|}{\textbf{Geom. \& Alti. feats.}} & \multicolumn{2}{x{2.4cm}|}{\textbf{Geom. \& Radio. feats.}} & \multicolumn{2}{|x{2.4cm}|}{\textbf{All feats.}}\\
+            &\multicolumn{2}{x{2.4cm}|}{\textbf{Geometry}} & \multicolumn{2}{x{2.4cm}|}{\textbf{Geometry $\cup$ Height}} & \multicolumn{2}{x{2.4cm}|}{\textbf{Geometry $\cup$ Image}} & \multicolumn{2}{|x{2.4cm}|}{\textbf{All}}\\
             \cline{2-9}
             &\textbf{Recall} & \textbf{Prec.} & \textbf{Recall} & \textbf{Prec.} & \textbf{Recall} & \textbf{Prec.} & \textbf{Recall} & \textbf{Prec.}\\
             \hline
@@ -392,47 +391,48 @@ Both error families are highly present in the dataset. Only a small fraction ($2
     \caption{\label{tab::f2_res}Test results expressed in percentage for the $\textit{finesse}=2$ case. All four configurations are compared across both family errors.}
 \end{table}
 
-Based on the devised pipeline, four feature configurations were tested: ``geometric features'' only, ``geometric and height based features'', ``geometric and image features'' as well as ``geometric, height and image features''. Each feature modality produces a $20$ dimension vector. A \SI{0.06}{\m} spatial resolution \acrshort{acr::dsm} and a \SI{0.2}{\m} pixel size orthorectified image are used to derive height and image features. Labels are extracted from a non \textbf{exclusive} and \textbf{\acrshort{acr::elod} $=\acrshort{acr::lod}2$} taxonomy. Both \textit{finesse} levels $2$ and $3$ are tested. The results are averaged over a $10$-fold cross validation tests. The overall accuracy is not interesting regarding the highly unbalanced nature of labels.
+Based on the devised pipeline, four feature configurations were tested: ``geometric features'' only, ``geometric and height features'', ``geometric and image features'' as well as ``geometric, height and image features''. Each feature modality produces a $20$ dimension vector. A \SI{0.06}{\m} spatial resolution \acrshort{acr::dsm} and a \SI{0.2}{\m} pixel size orthorectified image are used to derive height and image features. Labels are extracted from a non \textbf{exclusive} and \textbf{\acrshort{acr::elod} $=\acrshort{acr::lod}2$} taxonomy. Both \textit{finesse} levels $2$ and $3$ are tested. The results are averaged over a $10$-fold cross validation tests. The overall accuracy is not interesting regarding the highly unbalanced nature of labels.
 \begin{table}
 	\scriptsize
 	\begin{center}
         \begin{tabular}{|x{1.4cm} | x{1.2cm} x{1.2cm} | x{1.2cm} x{1.2cm} | x{1.2cm} x{1.2cm} | x{1.2cm} x{1.2cm}|}
 			\hline
-            &\multicolumn{2}{x{2.4cm}|}{\textbf{Geom. feats.}} & \multicolumn{2}{x{2.4cm}|}{\textbf{Geom. \& Alti. feats.}} & \multicolumn{2}{x{2.4cm}|}{\textbf{Geom. \& Img. feats.}} & \multicolumn{2}{|x{2.4cm}|}{\textbf{All feats.}}\\
+            &\multicolumn{2}{x{2.4cm}|}{\textbf{Geometry}} & \multicolumn{2}{x{2.4cm}|}{\textbf{Geometry $\cup$ Height}} & \multicolumn{2}{x{2.4cm}|}{\textbf{Geometry $\cup$ Image}} & \multicolumn{2}{|x{2.4cm}|}{\textbf{All}}\\
             \cline{2-9}
             &\textbf{Recall} & \textbf{Prec.} & \textbf{Recall} & \textbf{Prec.} & \textbf{Recall} & \textbf{Prec.} & \textbf{Recall} & \textbf{Prec.}\\
             \hline
-            Buil. over seg & \textbf{94.34} & $77.09$ &$93.36$ & \textbf{77.66} &$92.38$ & $77.04$ &$92.19$ & $76.69$ \\
+            \textit{BOS} & \textbf{94.34} & $77.09$ &$93.36$ & \textbf{77.66} &$92.38$ & $77.04$ &$92.19$ & $76.69$ \\
             \hline
-            Buil. under seg & $34.38$ & $76.43$ &$31.52$ & \textbf{78.57} & \textbf{42.98} & $76.53$ &$41.55$ & $77.96$ \\
+            \textit{BUS} & $34.38$ & $76.43$ &$31.52$ & \textbf{78.57} & \textbf{42.98} & $76.53$ &$41.55$ & $77.96$ \\
             \hline
-            Inexact footprint & \textbf{22.34} & \textbf{68.85} & $22.34$ & $67.74$ &$18.09$ & $64.15$ &$18.62$ & $64.81$ \\
+            \textit{BInf} & \textbf{22.34} & \textbf{68.85} & $22.34$ & $67.74$ &$18.09$ & $64.15$ &$18.62$ & $64.81$ \\
             \hline
-            Imprecise height & $0$ & --- & $0$ & --- & $0$ & --- &$0$ & $0$ \\
+            \textit{BImH} & $0$ & --- & $0$ & --- & $0$ & --- &$0$ & $0$ \\
             \hline
             \hline
-            Fac. over seg & $98.77$ & \textbf{98.77} & \textbf{98.87} & $98.67$ &$98.67$ & $98.47$ &$98.67$ & $98.37$ \\
+            \textit{FOS} & $98.77$ & \textbf{98.77} & \textbf{98.87} & $98.67$ &$98.67$ & $98.47$ &$98.67$ & $98.37$ \\
             \hline
-            Fac. under seg & \textbf{0.70} & \textbf{50.00} &$0.70$ & $33.34$ & \textbf{0.70} & \textbf{50.00} & \textbf{0.70} & \textbf{50.00} \\
+            \textit{FUS} & \textbf{0.70} & \textbf{50.00} &$0.70$ & $33.34$ & \textbf{0.70} & \textbf{50.00} & \textbf{0.70} & \textbf{50.00} \\
             \hline
-            Fac. inexact seg & \textbf{1.36} & \textbf{66.67} &$1.36$ & $50.00$ &$1.36$ & $28.57$ &$1.36$ & $40.00$ \\
+            \textit{FIS} & \textbf{1.36} & \textbf{66.67} &$1.36$ & $50.00$ &$1.36$ & $28.57$ &$1.36$ & $40.00$ \\
             \hline
-            Imprecise slope & $0$ & --- & $0$ & --- & $0$ & --- &$0$ & --- \\
+            \textit{FImS} & $0$ & --- & $0$ & --- & $0$ & --- &$0$ & --- \\
             \hline
 		\end{tabular}
 	\end{center}
-    \caption{\label{tab::f3_res}Test results reported in percentage for the \textit{finesse} level $3$. All \textit{atomic} errors are considered over all possible configurations.}
+    \caption{\label{tab::f3_res}Test results reported in percentage for the \textit{finesse} level $3$. All \textit{atomic} errors are considered over all possible configurations, where \textbf{Geometry} (\textit{resp.} \textbf{Geometry $\cup$ Height}, \textbf{Geometry $\cup$ Image} and \textbf{All}) represents ``geometric features'' only (\textit{resp.} ``geometric and height features'', ``geometric and image features'' and ``geometric, height and image features'')}
 \end{table}
 \subsection{Discussion}
 
-Three criteria are considered when analyzing results (\textit{c.f.} Tables~\ref{tab::f2_res} and~\ref{tab::f3_res}):
-\begin{itemize}
-	\item \textit{Finesse}: scores are compared, for both \textit{finesse} levels, by averaging across all feature configurations. In terms of precision, at \textit{finesse} level $3$, compared to \textit{finesse} level $2$, ``Facet errors'' family looses $7.2\%$, while ``Building errors'' gains only $0.6\%$. The same \textit{finesse} level comparison reveals that recall is diminished by $2.0\%$ for ``Facet errors'' and $8.3\%$ for ``Building errors''. Thus, if limited to determining the error family, training the model at the \textit{finesse} level $2$ is the best alternative.
-    \item Feature configurations: image and height attributes contributions are studied here. In general, results vary within a $2\%$ margin except in three cases. First, the precision instability for facet inexact and under segmentation can be spotted, as they are under detected: only one or two are rightfully identified as errors, while the number of valid instances, that are predicted as erroneous, vary between $1$ and $5$. Secondly, inexact footprint recall decreases by around $4\%$ in precision, when image features are added. This could result from the poor spatial resolution of orthorectified images. However, in the last case, image features help ``Building under segmentation'' error gaining around $9\%$ in recall while loosing only $1.5\%$ in precision. This may be explained by the high radiometric heterogeneity of building roofs.
-    \item \textit{Atomic} errors: scores are distinguished here according to \textit{atomic} errors. As predicted, defects that are well represented in the dataset achieve high recall and precision values. The others, being represented lower than $23\%$, are not well predicted, especially in the case of very rare errors: height imprecision ($7$) or slope errors ($21$).
-\end{itemize}
+Three criteria are considered when investigating qualitative results (\textit{c.f.} Tables~\ref{tab::f2_res} and~\ref{tab::f3_res}).
 
-Visualizing cases where our algorithm fails can be useful. In Figure~\ref{fig::results}, knowing studied errors distribution over the dataset, most erroneous predictions are explained. Thus, by determining the most likely misprediction causes, more robust features could be designed in the future. Dataset enrichment could be another option: it can help overcoming some failure cases by providing more representative samples of misdetected errors.
+The first analysis dimension involves \textit{finesse}. Scores are compared, between both \textit{finesse} levels, by averaging across all feature configurations. In terms of precision, at \textit{finesse} level $3$, compared to \textit{finesse} level $2$, ``Facet errors'' family looses $7.2\%$, while ``Building errors'' gains only $0.6\%$. The same \textit{finesse} level comparison reveals that recall is diminished by $2.0\%$ for ``Facet errors'' and $8.3\%$ for ``Building errors''. Thus, if limited to determining the error family, training the model at the \textit{finesse} level $2$ is the best alternative.
+
+Feature configurations are also studied in order to assess image and height attributes contributions. In general, results vary within a $2\%$ margin except in three cases. First, the precision instability for facet inexact and under segmentation can be spotted, as they are under detected: only one or two are rightfully identified as errors, while the number of valid instances, that are predicted as erroneous, vary between $1$ and $5$. Secondly, inexact footprint recall decreases by around $4\%$ in precision, when image features are added. This could result from the poor spatial resolution of orthorectified images. However, in the last case, image features help ``Building under segmentation'' error gaining around $9\%$ in recall while loosing only $1.5\%$ in precision. This may be explained by the high radiometric heterogeneity of building roofs.
+
+Last but not least, scores are distinguished according to \textit{atomic} errors. As predicted, defects that are well represented in the dataset achieve high recall and precision values. The others, being present at rates lower than $23\%$, are not well predicted, especially in the case of very rare errors: height imprecision ($7$) or slope errors ($21$).
+
+Qualitatively assessing results can also be useful, especially in failure cases. In Figure~\ref{fig::results}, knowing studied errors distribution over the dataset, most erroneous predictions are explained. Thus, by determining the most likely misprediction causes, more robust features could be designed in the future. Dataset enrichment could be another option: it can help overcoming some failure cases by providing more representative samples of misdetected errors.
 
 \begin{figure}
 	\begin{center}
@@ -443,10 +443,10 @@ Visualizing cases where our algorithm fails can be useful. In Figure~\ref{fig::r
 			\hline
 			\textbf{Errors} & \textbf{G.T.} & \textbf{Pred.} & \textbf{Errors} & \textbf{G.T.} & \textbf{Pred.} & \textbf{Errors} & \textbf{G.T.} & \textbf{Pred.} & \textbf{Errors} & \textbf{G.T.} & \textbf{Pred.}\\
             \hline
-            Buil. over seg. & \xmark & \cmark & Buil. under seg. & \xmark & \cmark & Buil. over seg. & \cmark & \cmark & Buil. over seg. & \cmark & \xmark \\
-            Valid & \cmark & \xmark & Fac. impr. seg. & \cmark & \xmark & Fac. under seg. & \cmark & \xmark &  Fac. over seg. & \cmark & \xmark \\
-             &  &  & Fac. over seg. & \cmark & \xmark &  &  &  & Buil. under seg. & \cmark & \xmark \\
-             &  &  &  &  &  &  &  &  &  Footprint & \cmark & \cmark \\
+            \textit{BOS} & \xmark & \cmark & \textit{BUS} & \xmark & \cmark & \textit{BOS} & \cmark & \cmark & \textit{BOS} & \cmark & \xmark \\
+            Valid & \cmark & \xmark & \textit{FImS} & \cmark & \xmark & \textit{FUS} & \cmark & \xmark &  \textit{FOS} & \cmark & \xmark \\
+             &  &  & \textit{FOS} & \cmark & \xmark &  &  &  & \textit{BUS} & \cmark & \xmark \\
+             &  &  &  &  &  &  &  &  &  \textit{BInF} & \cmark & \cmark \\
             \hline
 		\end{tabular}
         \caption{\label{fig::results} Predicted (Pred.) errors compared to ground truth (G.T.) labels are illustrated for some pathological cases. In the first image, the building outline is similar to samples where buildings are over segmented. In the second example, the building is wrongfully detected as under segmented due to the presence of a balcony and an annex smaller building. In the third sample, while being correctly predicted as an over segmented building it fails to detect the under segmented roof. Finally, in the last depiction, except the caught footprint error, the rest are ignored as there are no such samples, in the dataset, where building over and under segmentation co-occur.}
@@ -457,7 +457,7 @@ Visualizing cases where our algorithm fails can be useful. In Figure~\ref{fig::r
 
 We proposed a novel framework to semantically evaluate automatically modeled buildings. Errors are hierarchically organized into a flexible and parametrized error taxonomy. Based on the desired \acrshort{acr::lod}, exclusivity and semantic level, an error collection is considered. Model quality is then predicted using a pretrained classifier. Each model provides intrinsic geometrical characteristics that are compiled in a feature vector. Other modalities can help describing building models, as attributes can also be extracted from model comparison to images or depth data.
 
-This new framework was applied to the case of aerial urban reconstruction, where features are extracted from orthorectified images and a \acrshort{acr::dsm}. A dataset containing $1501$ diversified aerial reconstructed building models was used to test the devised evaluation method associated to multimodal baseline features. Although being mitigated over underrepresented errors, results are quite good in the well balanced cases, and thus, persuasive enough to continue investigating the present evaluation method. The next step would be to propose more structurally aware features to apply on a richer and more diverse dataset.
+This new framework was applied to the case of aerial urban reconstruction, where features are extracted from orthorectified images and a \acrshort{acr::dsm}. A dataset containing $1501$ diversified aerial reconstructed building models was used to test the devised evaluation method associated to multimodal baseline features. Although being mitigated over underrepresented errors, results are quite good in the well balanced cases, and thus, persuasive enough to continue investigating the present evaluation method. As a next step, more structurally aware features (based on graph comparison, for instance) could be proposed so as to be applied on a richer and more diverse dataset (potentially involving data augmentation).
 \bibliographystyle{splncs}
 \bibliography{references}
 \end{document}
