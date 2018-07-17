@@ -1,4 +1,4 @@
-% last updated in April 2002 by Antje Endemann
+\acrshort{acr::lod}-$% last updated in April 2002 by Antje Endemann
 % Based on CVPR 07 and LNCS, with modifications by DAF, AZ and elle, 2008 and AA, 2010, and CC, 2011; TT, 2014; AAS, 2016
 
 \documentclass[runningheads]{llncs}
@@ -142,7 +142,7 @@ At a first level, model qualifiability is studied. In fact, aside from formattin
 
 At the \textit{finesse} level $1$, a qualifiable building reconstruction correctness is predicted. It is the lowest semantization level at which the evaluation of a model is expressed. At this level, a model is either \textit{Valid} or \textit{Erroneous}. Most state-of-the-art evaluation methods are concerned by this level.
 
-Model errors are to be grouped into three families depending on the underlying \acrshort{acr::lod}. The first family of errors ``\textit{Building Errors}'' affects the building in its entirety. It corresponds to an accuracy evaluation at $\acrshort{acr::lod}0\text{ } \cup \text{ }\acrshort{acr::lod}1$. At the next $\acrshort{acr::lod}2$, the family ``\textit{Facet Errors}'' assembles defects that can damage fa\c{c}ade or roof fidelity. The last error family, \textit{i.e.} ``\textit{Superstructure Errors}'', describes errors that involve superstructures modeled at $\acrshort{acr::lod}3$. Only the first two families are represented in Figure~\ref{fig::taxonomy}, since the last one will not be studied in further experiments.
+Model errors are to be grouped into three families depending on the underlying \acrshort{acr::lod}. The first family of errors ``\textit{Building Errors}'' affects the building in its entirety. It corresponds to an accuracy evaluation at \acrshort{acr::lod}-$0$ $\cup$ \acrshort{acr::lod}-$1$. At the next \acrshort{acr::lod}-$2$, the family ``\textit{Facet Errors}'' assembles defects that can damage fa\c{c}ade or roof fidelity. The last error family, \textit{i.e.} ``\textit{Superstructure Errors}'', describes errors that involve superstructures modeled at \acrshort{acr::lod}-$3$. Only the first two families are represented in Figure~\ref{fig::taxonomy}, since the last one will not be studied in further experiments.
 
 Each family contains \textit{atomic} errors of maximal \textit{finesse} equal to $3$. Although they can co-occur in the same building model and across different error families, these errors are semantically independent. They represent specific topological or geometric defects. Topological errors translate inaccurate structural modeling, while geometric defects raise positioning infidelity.
 
@@ -308,7 +308,7 @@ When designing the classification process, two sources of flexibility are to be 
 
 \noindent
 \textbf{Classification problems.}
-Both the classification problem nature and the set of labels to work with are determined by the three previously defined taxonomy parameters (\textit{c.f.} Table~\ref{tab::problems}). The first \textbf{target \textit{finesse}} $= 1$ level corresponds to a binary classification problem: ` `Valid'' or ``Erroneous''. At the next one $\textit{finesse}=2$, the other parameters intervene. The \textbf{\acrshort{acr::elod}} can take then two values in the aerial reconstruction case: $\acrshort{acr::lod}1$ or $\acrshort{acr::lod}2$. If fixed at $\acrshort{acr::lod}1$, it is a binary classification problem: ``Valid'' or ``Building error''. For $\acrshort{acr::lod}2$, if the \textbf{exclusivity} is on, it turns into a multi-class problem: ``Valid'', ``Building error'' or ``Facet errors'', while, if set off, it becomes a multi-label one: ``Valid'', ``Building error'' and ``Facet errors''. At the last $\textit{finesse}=3$ level, if the \textbf{exclusivity} is on, it is a $2$-stage classification problem. In the first stage, a multi-class, or simply binary in case $\acrshort{acr::elod} = \acrshort{acr::lod}1$, problem, like in the previous semantic degree, predicts the error family, after which a second multi-label problem decides between the predicted error family children. If the \textbf{exclusivity} is off, it changes into  $1$-stage multi-label problem that guesses the existence of each atomic error corresponding to the chosen \acrshort{acr::elod}.
+Both the classification problem nature and the set of labels to work with are determined by the three previously defined taxonomy parameters (\textit{c.f.} Table~\ref{tab::problems}). The first \textbf{target \textit{finesse}} $= 1$ level corresponds to a binary classification problem: ` `Valid'' or ``Erroneous''. At the next one $\textit{finesse}=2$, the other parameters intervene. The \textbf{\acrshort{acr::elod}} can take then two values in the aerial reconstruction case: \acrshort{acr::lod}-$1$ or \acrshort{acr::lod}-$2$. If fixed at \acrshort{acr::lod}-$1$, it is a binary classification problem: ``Valid'' or ``Building error''. For \acrshort{acr::lod}-$2$, if the \textbf{exclusivity} is on, it turns into a multi-class problem: ``Valid'', ``Building error'' or ``Facet errors'', while, if set off, it becomes a multi-label one: ``Valid'', ``Building error'' and ``Facet errors''. At the last $\textit{finesse}=3$ level, if the \textbf{exclusivity} is on, it is a $2$-stage classification problem. In the first stage, a multi-class, or simply binary in case $\acrshort{acr::elod} = \acrshort{acr::lod}1$, problem, like in the previous semantic degree, predicts the error family, after which a second multi-label problem decides between the predicted error family children. If the \textbf{exclusivity} is off, it changes into  $1$-stage multi-label problem that guesses the existence of each atomic error corresponding to the chosen \acrshort{acr::elod}.
 
 \begin{table}
 	\begin{center}
@@ -318,13 +318,13 @@ Both the classification problem nature and the set of labels to work with are de
             \midrule
             \scriptsize
             $1$ & -- & -- & Binary(Valid, Erroneous)\\
-            $2$ & $\acrshort{acr::lod}1$ & -- & Binary(Valid, Building error)\\
-            $2$ & $\acrshort{acr::lod}2$ & on & MultiClass(Valid, Building error, Facet error)\\
-            $2$ & $\acrshort{acr::lod}2$ & off & MultiLabel(Valid, Building error, Facet error)\\
-            $3$ & $\acrshort{acr::lod}1$ & on & MultiLabel(children(Binary(Valid, Building error)))\\
-            $3$ & $\acrshort{acr::lod}2$ & on & MultiLabel(children(MultiClass(Valid, Building error, Facet error)))\\
-            $3$ & $\acrshort{acr::lod}1$ & off & MultiLabel(children(Building error))\\
-            $3$ & $\acrshort{acr::lod}2$ & off & MultiLabel(children(Building error)$\cup$ children(Facet error))\\
+            $2$ & \acrshort{acr::lod}-$1$ & -- & Binary(Valid, Building error)\\
+            $2$ & \acrshort{acr::lod}-$2$ & on & MultiClass(Valid, Building error, Facet error)\\
+            $2$ & \acrshort{acr::lod}-$2$ & off & MultiLabel(Valid, Building error, Facet error)\\
+            $3$ & \acrshort{acr::lod}-$1$ & on & MultiLabel(children(Binary(Valid, Building error)))\\
+            $3$ & \acrshort{acr::lod}-$2$ & on & MultiLabel(children(MultiClass(Valid, Building error, Facet error)))\\
+            $3$ & \acrshort{acr::lod}-$1$ & off & MultiLabel(children(Building error))\\
+            $3$ & \acrshort{acr::lod}-$2$ & off & MultiLabel(children(Building error)$\cup$ children(Facet error))\\
             \bottomrule
 		\end{tabular}
         \caption{\label{tab::problems} All possible classification problem types summary. children($error$) lists the children of $error$ from the taxonomy tree (Figure~\ref{fig::taxonomy}).}
@@ -338,7 +338,7 @@ In a multi-class classification problem, each instance has only one label that t
 \section{Experiments}
 \subsection{Data}
 
-The models in our dataset are generated using an urban modeling algorithm over Elancourt (France). The studied scene spans an area of around \SI{15}{\km\squared}. It contains residential districts with mostly bi-level buildings, industrial areas with flat roof buildings, a stadium, a petrol station and administrative edifices such as schools. These were modeled, using the algorithm described in~\cite{Durupt2006}, out of footprints and an aerial photogrammetric \acrshort{acr::dsm} with a \SI{0.06}{\m} spatial resolution. This method simulates possible roof structures with constraints on facet dimensions. The best roof structure is selected after scoring the extrapolated roofs. Finally, orthogonal building fa\c{c}ades connect the best roof to the ground. The produced $2.5D$ models have a $\acrshort{acr::lod}2$ level.  $1501$ buildings are considered in these experiments. They were annotated according to the atomic errors list provided by our taxonomy. Table~\ref{tab::statistics} reports error statistics over the annotated dataset.
+The models in our dataset are generated using an urban modeling algorithm over Elancourt (France). The studied scene spans an area of around \SI{15}{\km\squared}. It contains residential districts with mostly bi-level buildings, industrial areas with flat roof buildings, a stadium, a petrol station and administrative edifices such as schools. These were modeled, using the algorithm described in~\cite{Durupt2006}, out of footprints and an aerial photogrammetric \acrshort{acr::dsm} with a \SI{0.06}{\m} spatial resolution. This method simulates possible roof structures with constraints on facet dimensions. The best roof structure is selected after scoring the extrapolated roofs. Finally, orthogonal building fa\c{c}ades connect the best roof to the ground. The produced $2.5D$ models have a \acrshort{acr::lod}-$2$ level.  $1501$ buildings are considered in these experiments. They were annotated according to the atomic errors list provided by our taxonomy. Table~\ref{tab::statistics} reports error statistics over the annotated dataset.
 
 \begin{table}
     \scriptsize
