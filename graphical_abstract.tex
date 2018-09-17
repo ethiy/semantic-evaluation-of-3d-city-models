@@ -49,8 +49,8 @@
 
 		\path (ortho_projection.east) + (1,0) node (errors) {\includestandalone[mode=buildnew, height=1cm]{building_errors}};
         \path (errors |- residual_legend) node (errors_legend) {\tiny (d) Erroneous building:};
-        \path (errors_legend.south) + (0,-.1) node[align=left] (errors_list) {\tiny {\color{red}$\blacksquare$ Fidelity error}.};
-         \path (errors_list.south) node[align=left] (errors_list) {\tiny {\color{blue}$\blacksquare$ Modeling error}.};
+        \path (errors_legend.south) + (0,-.1) node[align=left] (errors_list) {\tiny {\color{red}$\blacksquare$ Geometrical error}.};
+         \path (errors_list.south) node[align=left] (errors_list) {\tiny {\color{blue}$\blacksquare$ Topological error}.};
          
          \path[draw, ->, line width=1pt, rounded corners=10pt, green] (model.east) -- (facet_graph.west);
          \path[draw, ->, line width=1pt, rounded corners=10pt, green] (ortho_projection.east) -- (errors.west);

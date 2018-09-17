@@ -1,13 +1,9 @@
-% last updated in April 2002 by Antje Endemann
-% * <oussama.ennafii@ign.fr> 2018-07-17T13:23:58.152Z:
-%
-% ^.
-% Based on CVPR 07 and LNCS, with modifications by DAF, AZ and elle, 2008 and AA, 2010, and CC, 2011; TT, 2014; AAS, 2016
-
 \documentclass[runningheads]{llncs}
 
+\usepackage{authblk}
+
 \usepackage{amsmath,amssymb,mathrsfs}
-\usepackage{ruler}
+
 \usepackage{color}
 \usepackage[width=122mm,left=12mm,paperwidth=146mm,height=193mm,top=12mm,paperheight=217mm]{geometry}
 
@@ -58,16 +54,20 @@
 
 \pagestyle{headings}
 \mainmatter{}
-\def\ECCV18SubNumber{17}  % Insert your submission number here
 
-\title{Semantic Evaluation of 3D city models}
+\title{Semantic evaluation of 3D city models}
 
-\titlerunning{ECCV-18 submission ID \ECCV18SubNumber}
+\titlerunning{Semantic evaluation of 3D city models}
 
-\authorrunning{ECCV-18 submission ID \ECCV18SubNumber}
+\authorrunning{\small Oussama Ennafii, Arnaud Le-Bris, Florent Lafarge, Cl\'ement Mallet}
 
-\author{Anonymous ECCV submission}
-\institute{Paper ID \ECCV18SubNumber}
+\author{Oussama Ennafii\inst{1, 2} \and Arnaud Le-Bris\inst{1}
+Florent Lafarge\inst{2} \and Cl\'ement Mallet\inst{1}}
+
+\institute{
+Univ. Paris-Est, LaSTIG MATIS, IGN, ENSG, 94160 Saint-Mand\'e, France
+\and
+Inria, Titane, 06902 Sophia Antipolis, France}
 
 \maketitle
 
@@ -83,13 +83,13 @@
 	\begin{figure}
         \begin{center}
             \includestandalone[mode=buildnew, width=\textwidth]{graphical_abstract}
-           \vspace{-1.3cm} \caption{\label{fig::pipeline} The semantic evaluation paradigm proposal: in addition to the input model topological structure depicted in (b), features are extracted from comparison to height maps, as represented by the difference computed between the model height and the \acrlong{acr::dsm} in (c). Images can also be used to characterize models by comparing their projected edges to local gradients (cf. (d)). Based on the computed features, semantic errors affecting the building are predicted using a pretrained classifier.}
+            \caption{\label{fig::pipeline} The semantic evaluation paradigm proposal: in addition to the input model topological structure depicted in (b), features are extracted from comparison to height maps, as represented by the difference computed between the model height and the \acrlong{acr::dsm} in (c). Images can also be used to characterize models by comparing their projected edges to local gradients (cf. (d)). Based on the computed features, semantic errors affecting the building are predicted using a pretrained classifier.}
         \end{center}
     \end{figure}
 
-    Our work focuses on assessing polyhedral structured models, representing building architectures. These models result from a given urban reconstruction method, e.g.~\cite{dick2004modelling}. Compared to triangle meshes that are extracted from multiview images or point clouds, the studied objects are, by design, more compact but less faithful to input data. In counterpart, they hold more semantic information as each polygonal facet typically corresponds to a fa\c{c}ade, a roof or any well defined architectural feature. $3D$ modeling algorithms traditionally build a compromise between compacity of the representation and fidelity to the input data (meshes or 3D points). Depending on its spatial resolution, the urban environment, and the targeted application, the reconstituted result achieves a certain \textbf{\gls{acr::lod}}~\cite{kolbe2005citygml}. A \acrshort{acr::lod}-$1$ model is a simple building extrusion (flat roof). A \acrshort{acr::lod}-$2$ model considers geometric simplification of buildings, ignoring superstructures, such as dormer windows and chimneys. These are taken into account in \acrshort{acr::lod}-$3$. The \acrshort{acr::lod} rational is still open for debate~\cite{2016_ceus_improved_lod}. Nevertheless, in this paper, we will follow the \acrshort{acr::lod} categorization introduced above, which is standard in the computer vision literature~\cite{verdie2015lod}.
+    Our work focuses on assessing polyhedral structured models, representing building architectures. These models result from a given urban reconstruction method, e.g.~\cite{dick2004modelling}. Compared to triangle meshes that are extracted from multiview images or point clouds, the studied objects are, by design, more compact but less faithful to input data. In counterpart, they hold more semantic information as each polygonal facet typically corresponds to a fa\c{c}ade, a roof or any well defined architectural feature. $3D$ modeling algorithms traditionally build a compromise between compactness of the representation and fidelity to the input data (meshes or 3D points). Depending on its spatial resolution, the urban environment, and the targeted application, the reconstituted result achieves a certain \textbf{\gls{acr::lod}}~\cite{kolbe2005citygml}. A \acrshort{acr::lod}-$1$ model is a simple building extrusion (flat roof). A \acrshort{acr::lod}-$2$ model considers geometric simplification of buildings, ignoring superstructures, such as dormer windows and chimneys. These are taken into account in \acrshort{acr::lod}-$3$. The \acrshort{acr::lod} rational is still open for debate~\cite{2016_ceus_improved_lod}. Nevertheless, in this paper, we will follow the \acrshort{acr::lod} categorization introduced above, which is standard in the computer vision literature~\cite{verdie2015lod}.
 
-A large body of papers has addressed the 3D building modeling issue and subsequently tried to find the trade-off between fidelity and compacity~\cite{dick2004modelling},~\cite{zebedin2008fusion},~\cite{Lafarge2010},~\cite{verdie2015lod}. Few works investigate the issue of assessing the quality of the derived models, especially out of a given reconstruction pipeline. Usually, quality assessment is based on visual inspection~\cite{Durupt2006},~\cite{MacayMoreia2013} or geometric fidelity metrics~\cite{Kaartinen2005} without any localized semantic dimension. Only one benchmark dataset~\cite{rottensteiner2014results} exists and is not widely used~\cite{li2016boxfitting},~\cite{nan2017polyfit},~\cite{nguatem2017modeling}. This motivates the need for a well suited quality assessment paradigm. Since the models to be diagnosed display strong structural properties, an unconstrained evaluation based on data fidelity metrics, as in~\cite{berger2013benchmark}, is too general. The evaluation should also ignore format issues or geometric consistencies as proposed in~\cite{ledoux2018val3dity}, as they must have been ruled out well before this stage. Instead, we target a \textit{semantic} evaluation in which building semantics should be taken into account through the detection and categorization of modeling errors at the facet level for each 3D building. The framework should be independent from the \acrlong{acr::lod} and the modeling method which is regularly evaluated based on the minimized metrics during the reconstruction process. Thus, we define an evaluation framework that can be used for:
+A large body of papers has addressed the 3D building modeling issue and subsequently tried to find the trade-off between fidelity and compactness~\cite{dick2004modelling},~\cite{zebedin2008fusion},~\cite{Lafarge2010},~\cite{verdie2015lod}. Few works investigate the issue of assessing the quality of the derived models, especially out of a given reconstruction pipeline. Usually, quality assessment is based on visual inspection~\cite{Durupt2006},~\cite{MacayMoreia2013} or geometric fidelity metrics~\cite{Kaartinen2005} without any localized semantic dimension. Only one benchmark dataset~\cite{rottensteiner2014results} exists and is not widely used~\cite{li2016boxfitting},~\cite{nan2017polyfit},~\cite{nguatem2017modeling}. This motivates the need for a well suited quality assessment paradigm. Since the models to be diagnosed display strong structural properties, an unconstrained evaluation based on data fidelity metrics, as in~\cite{berger2013benchmark}, is too general. The evaluation should also ignore format issues or geometric consistencies as proposed in~\cite{ledoux2018val3dity}, as they must have been ruled out well before this stage. Instead, we target a \textit{semantic} evaluation in which building semantics should be taken into account through the detection and categorization of modeling errors at the facet level for each 3D building. The framework should be independent from the \acrlong{acr::lod} and the modeling method which is regularly evaluated based on the minimized metrics during the reconstruction process. Thus, we define an evaluation framework that can be used for:
     \begin{itemize}
         \item \textbf{Building model correction}: for the automatic or interactive~\cite{kowdle2011active} refinement of building models using the detected errors.
         \item \textbf{Change detection}: modeling errors can straightforwardly stem from changes, which often occur in urban environments~\cite{taneja2015geometric}. Conversely, changes can be implicitly detected from other defects.
@@ -109,16 +109,13 @@ Section~\ref{sec:related} introduces the problem of the evaluation of 3D buildin
 \label{sec:related}
 Quality assessment methods can be classified according to two main criteria: reference data and output type.
 
-\noindent
-\textbf{Reference data types.}
+\subsubsection{Reference data types.}
 Existing methods rely on two types of reference data in order to compare models to. First comes manually plotted ground truth data with very high spatial accuracy. These models can be obtained either from field measurements~\cite{dick2004modelling},~\cite{Kaartinen2005} with the highest possible precision ($\sigma(\text{error}) \approx \SI{0.05}{\meter}$), or using stereo-plotting~\cite{jaynes2003recognition},~\cite{Kaartinen2005},~\cite{zebedin2008fusion},~\cite{Zeng2014}. However, such an approach does not scale well. The other alternative is the direct comparison with raw data. For instance, models can be compared to LiDAR point clouds, height maps~\cite{Akca2010},~\cite{lafarge2012creating},~\cite{li2016boxfitting} or geospatial multi-view images as in~\cite{boudet2006supervised},~\cite{Michelin2013}. They are, however, not always helpful: these are the input data used by modeling methods and such comparisons are often the basis for their fidelity criterion.
 
-\noindent
-\textbf{Evaluation outputs.}
+\subsubsection{Evaluation outputs.}
 The quality assessment methods can produce two kinds of outputs. \textbf{Geometric fidelity metrics} summarize the quality of the whole assessed model. These indices are computed at different levels: specific points of interest (such as corners or edge points) average precision~\cite{vogtle2003quality},~\cite{Kaartinen2005}, surface dissimilarity~\cite{jaynes2003recognition},~\cite{dick2004modelling},~\cite{Kaartinen2005},~\cite{zebedin2008fusion},~\cite{lafarge2012creating},~\cite{Zeng2014},~\cite{li2016boxfitting},~\cite{nan2017polyfit} or volume discrepancy to reference data~\cite{jaynes2003recognition},~\cite{Zeng2014}. The obtained outputs have the drawback of being too general for the special case of urban structured models. Indeed, their diagnosis, far from surface reconstruction evaluation~\cite{berger2013benchmark}, needs to pinpoint specific types of errors that can be easily corrected once identified~\cite{OudeElberink2010}. On the other hand, \textbf{semantic errors} identify topological and geometric errors that affect building models. One example of such defects is the traffic light paradigm (``correct'', ``acceptable'', ``generalized'' and ``rejected'')~\cite{boudet2006supervised}. However, these errors depend on a  definition of the end-user specific ``generalization'' level at which models are rejected. In addition, this taxonomy does not help in localizing the model shortcomings. Another solution is to look at the issue at hand through the used reconstruction algorithm perspective. For instance, defects are discriminated in~\cite{Michelin2013} between footprint errors (``erroneous outline'', ``inexistent building'', ``missing inner court'' and ``imprecise footprint''), intrinsic reconstruction errors (``over segmentation'', ``under segmentation'', ``inexact roof'' and ``Z translation'') and ``vegetation occlusion'' errors. In the latter methods~\cite{boudet2006supervised},~\cite{Michelin2013}, the evaluation is casted as a supervised classification process: the predicted classes are defects listed in an established taxonomy. Features used for this classification are extracted from very high spatial resolution (\SIrange{0.2}{0.25}{\m}) images and \glspl{acr::dsm}, like 3D segment or texture correlation score comparisons. In spite of their semantic contribution in quality evaluation, such taxonomies are prone to overfitting to specific urban scenes or modeling algorithms.
 
-\noindent
-\textbf{Main objective.}
+\subsubsection{Main objective.}
 This work defines a new quality evaluation paradigm when only the most accessible unstructured data could be provided. It should also be capable of detecting semantic localized errors independently from the used reconstruction method(s) and the urban environment.
 
 \section{Problem formulation}
@@ -133,8 +130,7 @@ The quality assessment pipeline is also \textbf{modular}. Building models are re
 \subsection{Error taxonomy}
 In order to build a generic and flexible taxonomy, we rely on two criteria for error compilation: the building model \acrshort{acr::lod} and the error semantic level, named henceforth \textit{finesse} (cf. Figure~\ref{fig::taxonomy}). Different degrees of \textit{finesse} describe, from coarse to fine, the specificity of defects. Errors with maximal \textit{finesse} are called \textit{atomic} errors. Multiple \textit{atomic} errors can affect the same building. For instance, topological defects induce, almost always, geometrical ones. In practice, only independently coexisting \textit{atomic} defects are reported. The idea is to provide the most relevant information to be able to correct a model. \textit{Atomic} errors can thus be heuristically correlated to independent actions that an operator or an algorithm needs to choose to correct building models.
 
-\noindent
-\textbf{The general framework.}
+\subsubsection{The general framework.}
 The main idea of error hierarchization is to enable modularity in the taxonomy, and thus achieve a strong flexibility towards input urban scenes and desired error precision. A general layout is first drawn, followed by the detailed error description.
 
 At a first level, model qualifiability is studied. In fact, aside from formatting issues or geometric inconsistencies~\cite{ledoux2018val3dity}, other reasons make building models unqualifiable. For instance, buildings can be occluded by vegetation. Generally speaking, input models can be impaired by some pathological cases that are outside our evaluation framework. In consequence, \textit{qualifiable} models are distinguished here from \textit{unqualifiable} buildings. This first level corresponds to a \textit{finesse} equal to $0$.
@@ -150,12 +146,10 @@ At evaluation time, three parameters play a role in determining which error labe
 	\begin{figure}
         \begin{center}
             \includestandalone[mode=buildnew, width=\textwidth]{taxonomy_tree}
-            \vspace{-1.1cm}
             \caption{\label{fig::taxonomy} The proposed taxonomy structure. In our case of very high resolution overhead modeling, only two family errors are depicted. At \textit{finesse} level $2$, hierarchization is possible: the \textbf{exclusivity} parameter can thus act. However, it is not the case at the \textit{atomic} errors level since they are independent. }
         \end{center}
     \end{figure}
-\noindent
-\textbf{The geospatial overhead modeling case.}
+\subsubsection{The geospatial overhead modeling case.}
 This study is, henceforth, narrowed to the satellite and aerial reconstruction case. The objective is to reconstruct large urban scenes using Very High Resolution geospatial images or, if available, \acrshort{acr::lidar} point clouds. These data could also be used later to assess modeled buildings.
 
 In the present case, $2.5D$ buildings are evaluated. The next \textit{atomic} errors are proposed:
@@ -176,7 +170,7 @@ In the present case, $2.5D$ buildings are evaluated. The next \textit{atomic} er
         \end{itemize}
 	\end{itemize}
 
-These errors are illustrated in Figure~\ref{fig::samples}. In (\ref{fig::bul_err}.(a)), two distinct buildings can be visually identified  while they are grouped into one building. The contrary happens when a single building is subdivided in three parts as in (\ref{fig::bul_err}.(b)). \textit{BInF} can be detected easily when it ensues a wrong outline as illustrated in the top right corner of (\ref{fig::bul_err}.(c)). Depth information is hard to convey using only one image, as shown in (\ref{fig::bul_err}.(d)). The balcony, besides being detached form its building, has its height wrongly estimated due to the influence of the main building. It is also impossible to deduce the slope mis-evaluation without a depth map as depicted in (\ref{fig::fac_err}.(d)). Another fidelity error can be seen in (\ref{fig::fac_err}.(c)), as the central edge that links the two main roof sides does not correspond to the image position. Facets can also suffer from over segmentation as both roof sides are in (\ref{fig::fac_err}.(b)). To complete the picture, (\ref{fig::fac_err}.(a)) illustrates how a model roof facet can be under segmented.
+These errors are illustrated in Figure~\ref{fig::samples}. In (\ref{fig::bul_err}.(a)), two distinct buildings can be visually identified  while they are grouped into one building. The contrary happens when a single building is subdivided in three parts as in (\ref{fig::bul_err}.(b)). \textit{BInF} can be detected easily when it ensues a wrong outline as illustrated in the top right corner of (\ref{fig::bul_err}.(c)). Depth information is hard to convey using only one image, as shown in (\ref{fig::bul_err}.(d)). The balcony, besides being detached from its building, has its height wrongly estimated due to the influence of the main building. It is also impossible to deduce the slope mis-evaluation without a depth map as depicted in (\ref{fig::fac_err}.(d)). Another fidelity error can be seen in (\ref{fig::fac_err}.(c)), as the central edge that links the two main roof sides does not correspond to the image position. Facets can also suffer from over segmentation as both roof sides are in (\ref{fig::fac_err}.(b)). To complete the picture, (\ref{fig::fac_err}.(a)) illustrates how a model roof facet can be under segmented.
 
     \thisfloatsetup{heightadjust=object}
     \begin{figure}
@@ -194,7 +188,6 @@ These errors are illustrated in Figure~\ref{fig::samples}. In (\ref{fig::bul_err
                 {
                     \captionsetup{labelfont={tiny, bf},textfont=scriptsize,justification=raggedright, labelsep=period}
                     \renewcommand{\thesubfigure}{\roman{SubFigCounter}}
-					\vspace{-.3cm}
                     \captionof{subfigure}{Building errors family samples.}\label{fig::bul_err}
                     \refstepcounter{SubFigCounter}
                     \addtocounter{figure}{-1}
@@ -211,14 +204,12 @@ These errors are illustrated in Figure~\ref{fig::samples}. In (\ref{fig::bul_err
                 {
                 	\captionsetup{labelfont={bf},justification=raggedright, labelsep=period}
                     \renewcommand{\thesubfigure}{\roman{SubFigCounter}}
-					\vspace{-.3cm}
                     \captionof{subfigure}{Facet errors family samples.}\label{fig::fac_err}
                     \refstepcounter{SubFigCounter}
                     \addtocounter{figure}{-1}
                 }
             }
             {
-            	\vspace{-.3cm}
                 \caption{\label{fig::samples}Illustration of various errors of our taxonomy. One can see that geometric, spectral and height information are required for an accurate detection of all kinds of errors.}
             }
         \end{center}
@@ -229,14 +220,13 @@ In order to predict errors, models need to be described using relevant attribute
 
 The presented approach offers another flexibility lever related to the input data. The model itself can be directly used in order to discover flaws based on its geometrical structure compared to the dataset statistics. Dense depth information can be added, through for instance a \acrshort{acr::dsm}, in order to help detecting defects that can be hardly discriminated otherwise. Eventually, optical images can bring additional information critical for semantic heavy segmentation evaluation (high frequencies and texture). Each modality is described herein in detail.
 
-\noindent
-\textbf{Geometric features.}
+\subsubsection{Geometric features.}
 The model facet set is denoted by $\mathsf{F}$. $\forall (f, g) \in \mathsf{F} \times \mathsf{F} \quad f \sim g$ correspond to facets $f$ and $g$ being adjacent: \textit{i.e.}, they share a common edge. As the roof topology graph in~\cite{Verma2006}, the input building model can be seen as a facet (dual) graph:
 \begin{equation}
 	\label{eq::model_graph}
 	\mathsf{M} \triangleq \Big(\mathsf{F}, \mathsf{E} \triangleq \big\{ (f, g) \in \mathsf{F} \times \mathsf{F} : f \sim g \big\} \Big).
 \end{equation}
-For each facet $f \in \mathsf{F}$, we compute its degree (\textit{i.e.}, number of vertices; $d(f) \triangleq \vert\{v : v\text{ is a vertex of }f\}\vert$), area $\mathscr{A}(f)$, circumference $\mathscr{C}(f)$, centroid $\mathscr{G}(f)$ and  normal $\vec{n}(f)$. Statistical characteristics are then computed over building model facets using specific functions $S$, like a histogram $S^p_{hist}: l \mapsto histogram(l, p)$, with $p$ standing for histogram parameters. An other simple option could be $S_{synth}: l \mapsto \begin{bmatrix}
+For each facet $f \in \mathsf{F}$, we compute its degree (\textit{i.e.}, number of vertices; $d(f) \triangleq \vert\{v : v\text{ is a vertex of }f\}\vert$), area $\mathscr{A}(f)$, circumference $\mathscr{C}(f)$, centroid $\mathscr{G}(f)$ and  normal $\vec{n}(f)$. Statistical characteristics are then computed over building model facets using specific functions $S$, like a histogram $S^p_{hist}: l \mapsto histogram(l, p)$, with $p$ standing for histogram parameters. Another simple option could be $S_{synth}: l \mapsto \begin{bmatrix}
 \max(l)& \min(l) & \bar{l} & \text{median}(l) & \sigma(l)
 \end{bmatrix}$ where $\bar{l}$ (\textit{resp.} $\sigma(l)$) represents the mean (\textit{resp.} the standard deviation) over a tuple $l$.
 
@@ -254,8 +244,7 @@ Each building $\mathsf{M}$ can consequently be characterized by a geometric feat
 \end{equation}
 Additionally to individual facet statistics, regularity is taken into account by looking into adjacent graph nodes as in~\cite{Zhou2012}. Such features express only a small part of structural information. Taking this type of information into account would implicate graph comparisons which are not genuinely simple tasks to achieve. Since our objective is to build a baseline, this approach has not been considered for the moment.
 
-\noindent
-\textbf{Height based features.}
+\subsubsection{Height based features.}
 For this modality, raw depth information is provided by a \acrlong{acr::dsm} as a $2D$ height grid $dsm$. It must have been produced around the same time of the $3D$ reconstruction so as to avoid probable temporal changes. It is compared to the model altimetry like in~\cite{Bredif2007},~\cite{zebedin2008fusion}. The latter is inferred from its facets plane equations. It is then rasterized into the image $alt$ at the spatial resolution of the $dsm$. Their difference reveals a discrepancy map that can be exploited for the prediction (cf. Figure~\ref{fig::pipeline}.c). A baseline approach is proposed relying on pixel values statistics computed using previously defined functions $S$.
 \begin{equation}
 	\label{eq::alti_feat}
@@ -263,9 +252,8 @@ For this modality, raw depth information is provided by a \acrlong{acr::dsm} as 
 \end{equation}
 Equation~\ref{eq::alti_feat} summarizes how building height based features are computed. Different from a root mean square metric~\cite{lafarge2012creating},~\cite{Poullis2013}, the histogram captures the the discrepancy distribution. However, as for the previous geometric attributes, structural information coming from the model is lost.
 
-\noindent
-\textbf{Image features.} We can benefit from high frequencies existing in Very High Spatial Resolution optical images.
-Building edges correspond to sharp discontinuities in images~\cite{ortner2007building}. The idea is to compare these edges to local gradients in order to look for inconsistencies. In an ideal setting, in an image $I$, gradients computed at pixels $g$ that intersect any segment $s$ from the building projection (\ref{fig::radio}) will almost be collinear with its normal. In consequence, we qualify, applying the same statistical functions $S$, the distribution of the normalized gradient scalar product with the normal all along a segment:
+\subsubsection{Image features.} We can benefit from high frequencies existing in Very High Spatial Resolution optical images.
+Building edges correspond to sharp discontinuities in images~\cite{ortner2007building}. The idea is to compare these edges to local gradients in order to look for inconsistencies. In an ideal setting, in an image $I$, gradients computed at pixels $g$ that intersect any segment $s$ from the building projection (\ref{fig::radio}) will almost be collinear with its normal. In consequence, we qualify, applying the same statistical functions $S$, the distribution of the normalized gradient scalar product with the normal all along a facet edge:
 \begin{equation}
 	\label{eq::corr_seg}
     \mathsf{D}_S(s, I) \triangleq S \bigg( \Big(\frac{\nabla I(g) \cdot \vec{n}(s)}{\Vert \nabla I(g)\Vert})_{g \in I \textrm{ and } g \cap s} \Big)\bigg).
@@ -280,7 +268,6 @@ Building edges correspond to sharp discontinuities in images~\cite{ortner2007bui
                 \ffigbox[\FBwidth]{\caption{\tiny The green squares represent intersecting pixels with the red segment. The gradient vector in purple is compared to the segment normal in black.}\label{fig::seg_inter}}{\includestandalone[mode=buildnew, width=.25\textwidth]{radiometric_features}}
             \end{subfloatrow}
         }{
-        	\vspace{-.2cm}
         	\caption{Illustration of features that can be derived from optical images. For each model facet, the corresponding polygon projection edges are compared to local gradients as in (b).} \label{fig::image}
         }
 	\end{center}
@@ -323,7 +310,6 @@ Both the classification problem nature and the set of labels to work with are de
             $3$ & \acrshort{acr::lod}-$2$ & off & MultiLabel(children(Building error)$\cup$ children(Facet error))\\
             \bottomrule
 		\end{tabular}
-        \vspace{-.5cm}
         \caption{\label{tab::problems} The summary of all possible classification problem types. children($error$) lists the children of $error$ from the taxonomy tree (Figure~\ref{fig::taxonomy}).}
 	\end{center}
 \end{table}
@@ -366,7 +352,6 @@ We evaluate our approach using a 3D city model over the city of Elancourt (Franc
                 &                   & Imprecise slope & $0.0193$ & $0.0140$ \\
             \hline
         \end{tabular}
-        \vspace{-.5cm}
         \caption{\label{tab::statistics} Ground truth statistics over the dataset containing $1501$ buildings. \textit{Atomic} errors are miscellaneously represented.}
     \end{center}
 \end{table}
@@ -389,7 +374,6 @@ Both error families are highly present in the dataset. Only a small fraction ($2
             \hline
 		\end{tabular}
 	\end{center}
-    \vspace{-.5cm}
     \caption{\label{tab::f2_res}Test results expressed in percentage for the $\textit{finesse}=2$ case. All four configurations are compared across both family errors. \textbf{Geom.} stands for geometric}
 \end{table}
 
@@ -422,8 +406,7 @@ Based on the devised pipeline, four feature configurations were tested: ``geomet
             \hline
 		\end{tabular}
 	\end{center}
-    \vspace{-.5cm}
-    \caption{\label{tab::f3_res}Test results reported in percentage for the \textit{finesse} level $3$. All \textit{atomic} errors are considered over all possible configurations.}
+    \caption{\label{tab::f3_res}Test results reported in percentage for the \textit{finesse} level $3$. All \textit{atomic} errors are considered over all possible configurations. Ratios in bold represent the higher ones for each error.}
 \end{table}
 \subsection{Discussion}
 
@@ -446,7 +429,6 @@ Qualitative assessment is also performed in order to illustrate some failure cas
              &  &  &  &  &  &  &  &  &  \textit{BInF} & \cmark & \cmark \\
             \hline
 		\end{tabular}
-        \vspace{-.5cm}
         \caption{\label{fig::results} Predicted (Pred.) errors compared to ground truth (G.T.) labels are illustrated for some pathological cases. Knowing how each error is represented in the dataset helps interpreting mispredictions.}
 	\end{center}
 \end{figure}
